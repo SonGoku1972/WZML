@@ -497,6 +497,17 @@ async def get_stats(event, key="home"):
         total, used, free, disk = disk_usage('/')
         swap = swap_memory()
         memory = virtual_memory()
+        try:
+            disk_io = psutil.disk_io_counters()
+            if disk_io is not None:
+                disk_read = get_readable_file_size(disk_io.read_bytes) + f" ({get_readable_time(disk_io.read_time / 1000)})"
+                disk_write = get_readable_file_size(disk_io.write_bytes) + f" ({get_readable_time(disk_io.write_time / 1000)})"
+            else:
+                disk_read = "N/A"
+                disk_write = "N/A"
+        except Exception as e:
+            disk_read = "Error"
+            disk_write = "Error"
         msg = BotTheme('BOT_STATS',
             bot_uptime=get_readable_time(time() - botStartTime),
             ram_bar=get_progress_bar_string(memory.percent),
@@ -511,8 +522,8 @@ async def get_stats(event, key="home"):
             swap_t=get_readable_file_size(swap.total),
             disk=disk,
             disk_bar=get_progress_bar_string(disk),
-            disk_read=get_readable_file_size(disk_io_counters().read_bytes) + f" ({get_readable_time(disk_io_counters().read_time / 1000)})",
-            disk_write=get_readable_file_size(disk_io_counters().write_bytes) + f" ({get_readable_time(disk_io_counters().write_time / 1000)})",
+            disk_read=disk_read,
+            disk_write=disk_write,
             disk_t=get_readable_file_size(total),
             disk_u=get_readable_file_size(used),
             disk_f=get_readable_file_size(free),
