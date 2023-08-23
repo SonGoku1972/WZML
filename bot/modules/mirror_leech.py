@@ -42,7 +42,7 @@ async def _mirror_leech(client, message, isQbit=False, isLeech=False, sameDir=No
                 '-j': False, '-join': False,
                 '-s': False, '-select': False,
                 '-b': False, '-bulk': False,
-                '-n': '', '-name': '',
+                '|': '', '-n': '',
                 '-e': False, '-extract': False,
                 '-uz': False, '-unzip': False,
                 '-z': False, '-zip': False,
@@ -70,7 +70,7 @@ async def _mirror_leech(client, message, isQbit=False, isLeech=False, sameDir=No
     join          = args['-j'] or args['-join']
     select        = args['-s'] or args['-select']
     isBulk        = args['-b'] or args['-bulk']
-    name          = args['-n'] or args['-name']
+    name          = args['|'] or args['-n']
     extract       = args['-e'] or args['-extract'] or args['-uz'] or args['-unzip'] or 'uz' in cmd or 'unzip' in cmd
     compress      = args['-z'] or args['-zip'] or (not extract and ('z' in cmd or 'zip' in cmd))
     up            = args['-up'] or args['-upload']
