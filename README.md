@@ -64,7 +64,7 @@ heroku create --region us --stack container APP_NAME
 - `--buildpack heroku/python` for using build slug for repo deploy and build.
 
 **Step 5 :** Now set all the Required Variables and Files into this Branch MAIN Repo like config.env, accounts.zip, token.pickle, All Private Files(optional)- 
-  > Only config.env Mabdatory with Only Mandatory Vars Only, After that Put all Private Files or Vars via Bot Settings `/bs`
+  > Only config.env Mandatory with Only Mandatory Vars Only, After that Put all Private Files or Vars via Bot Settings `/bs`
 
 **To Edit Inside CLI (nano Editor):** _(Termux Users)_
 ```shell
