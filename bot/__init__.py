@@ -135,7 +135,7 @@ if len(TELEGRAM_HASH) == 0:
     
 TIMEZONE = environ.get('TIMEZONE', '')
 if len(TIMEZONE) == 0:
-    TIMEZONE = 'Asia/Kolkata'
+    TIMEZONE = 'Africa/Nairobi'
     
 def changetz(*args):
     return datetime.now(timezone(TIMEZONE)).timetuple()
@@ -495,23 +495,23 @@ IMG_PAGE = int(IMG_PAGE) if IMG_PAGE.isdigit() else ''
 
 AUTHOR_NAME = environ.get('AUTHOR_NAME', '')
 if len(AUTHOR_NAME) == 0:
-    AUTHOR_NAME = 'WZML-X'
+    AUTHOR_NAME = 'Kysage'
 
 AUTHOR_URL = environ.get('AUTHOR_URL', '')
 if len(AUTHOR_URL) == 0:
-    AUTHOR_URL = 'https://t.me/WZML_X'
+    AUTHOR_URL = 'https://t.me/kysage1'
 
 TITLE_NAME = environ.get('TITLE_NAME', '')
 if len(TITLE_NAME) == 0:
-    TITLE_NAME = 'WZ-M/L-X'
+    TITLE_NAME = 'kysage1/MLTB'
     
 COVER_IMAGE = environ.get('COVER_IMAGE', '')
 if len(COVER_IMAGE) == 0:
-    COVER_IMAGE = 'https://graph.org/file/60f9f8bcb97d27f76f5c0.jpg'
+    COVER_IMAGE = 'https://telegra.ph/file/873da5a8b0801f4723f45.jpg'
 
 GD_INFO = environ.get('GD_INFO', '')
 if len(GD_INFO) == 0:
-    GD_INFO = 'Uploaded by WZML-X'
+    GD_INFO = 'Uploaded by @kysage1'
 
 SAVE_MSG = environ.get('SAVE_MSG', '')
 SAVE_MSG = SAVE_MSG.lower() == 'true'
