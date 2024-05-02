@@ -18,6 +18,7 @@ google-auth-httplib2
 google-auth-oauthlib
 gunicorn
 git+https://github.com/zevtyardt/lk21.git
+git+https://github.com/kenzopanel/pyppeteer.git
 httpx
 langcodes[data]
 lxml
