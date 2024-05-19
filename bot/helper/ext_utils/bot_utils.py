@@ -44,7 +44,7 @@ PAGE_NO      = 1
 
 
 class MirrorStatus:
-    if EMOJI_THEME is False:
+    if:
         STATUS_UPLOADING = "📤 Upload"
         STATUS_DOWNLOADING = "📥 Download"
         STATUS_CLONING = "♻️ Clone"
