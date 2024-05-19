@@ -1,31 +1,46 @@
-from re import match as re_match, findall as re_findall
-from threading import Thread, Event
+#!/usr/bin/env python3
+import platform
+from base64 import b64encode
+from datetime import datetime
+from os import path as ospath
+from pkg_resources import get_distribution, DistributionNotFound
+from aiofiles import open as aiopen
+from aiofiles.os import remove as aioremove, path as aiopath, mkdir
+from re import match as re_match
 from time import time
-from math import ceil
 from html import escape
+from uuid import uuid4
+from subprocess import run as srun
+from psutil import disk_usage, disk_io_counters, Process, cpu_percent, swap_memory, cpu_count, cpu_freq, getloadavg, virtual_memory, net_io_counters, boot_time
+from asyncio import create_subprocess_exec, create_subprocess_shell, run_coroutine_threadsafe, sleep
+from asyncio.subprocess import PIPE
+from functools import partial, wraps
+from concurrent.futures import ThreadPoolExecutor
+
+from aiohttp import ClientSession as aioClientSession
 from psutil import virtual_memory, cpu_percent, disk_usage
-from requests import head as rhead
-from urllib.request import urlopen
+from requests import get as rget
+from mega import MegaApi
+from pyrogram.enums import ChatType
+from pyrogram.types import BotCommand
+from pyrogram.errors import PeerIdInvalid
 
+from bot.helper.ext_utils.db_handler import DbManger
+from bot.helper.themes import BotTheme
+from bot.version import get_version
+from bot import OWNER_ID, bot_name, bot_cache, DATABASE_URL, LOGGER, get_client, aria2, download_dict, download_dict_lock, botStartTime, user_data, config_dict, bot_loop, extra_buttons, user
 from bot.helper.telegram_helper.bot_commands import BotCommands
-from bot import FINISHED_PROGRESS_STR, UN_FINISHED_PROGRESS_STR, download_dict, download_dict_lock, STATUS_LIMIT, botStartTime, DOWNLOAD_DIR, WEB_PINCODE, BASE_URL, EMOJI_THEME, TOTAL_TASKS_LIMIT, USER_TASKS_LIMIT, LEECH_LIMIT, MEGA_LIMIT, CREDIT_NAME, TORRENT_DIRECT_LIMIT, ZIP_UNZIP_LIMIT
 from bot.helper.telegram_helper.button_build import ButtonMaker
+from bot.helper.ext_utils.telegraph_helper import telegraph
+from bot.helper.ext_utils.shortners import short_url
 
-import shutil
-import psutil
-from telegram.error import RetryAfter
-from telegram.ext import CallbackQueryHandler
-from telegram.message import Message
-from telegram.update import Update
-from bot import *
-
-MAGNET_REGEX = r"magnet:\?xt=urn:btih:[a-zA-Z0-9]*"
-
-URL_REGEX = r"(?:(?:https?|ftp):\/\/)?[\w/\-?=%.]+\.[\w/\-?=%.]+"
-
-COUNT = 0
-PAGE_NO = 1
-PAGES = 0
+THREADPOOL   = ThreadPoolExecutor(max_workers=1000)
+MAGNET_REGEX = r'magnet:\?xt=urn:(btih|btmh):[a-zA-Z0-9]*\s*'
+URL_REGEX    = r'^(?!\/)(rtmps?:\/\/|mms:\/\/|rtsp:\/\/|https?:\/\/|ftp:\/\/)?([^\/:]+:[^\/@]+@)?(www\.)?(?=[^\/:\s]+\.[^\/:\s]+)([^\/:\s]+\.[^\/:\s]+)(:\d+)?(\/[^#\s]*[\s\S]*)?(\?[^#\s]*)?(#.*)?$'
+SIZE_UNITS   = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB']
+STATUS_START = 0
+PAGES        = 1
+PAGE_NO      = 1
 
 
 class MirrorStatus:
