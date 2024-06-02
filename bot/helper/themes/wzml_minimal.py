@@ -256,7 +256,6 @@ class WZMLStyle:
     USER_SETTING = '''㊂ <b><u>User Settings :</u></b>
         
 ╭<b>👤Name :</b> {NAME} ( <code>{ID}</code> )
-├<b>🪪Username :</b> {USERNAME}
 ├<b>🔮Telegram DC :</b> {DC}
 ╰<b>🗣️Language :</b> {LANG}
 
