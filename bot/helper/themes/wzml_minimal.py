@@ -263,7 +263,7 @@ class WZMLStyle:
 ➲ <u><b>Available Args:</b></u>
 • <b>-s</b> or <b>-set</b>: Set Directly via Arg
 
-f'<a href="https://t.me/TELLYCLOUD_Bots"><b>❖𝐓𝐄𝐋𝐋𝐘𝐂𝐋𝐎𝐔𝐃 𝐁𝐎𝐓𝐒™❖</b></a>'''
+<a href="https://t.me/TELLYCLOUD_Bots"><b>🫧💗✨𝐓𝐄𝐋𝐋𝐘𝐂𝐋𝐎𝐔𝐃 𝐁𝐎𝐓𝐒™🫧💗✨</b></a>'''
 
     UNIVERSAL = '''㊂ <b><u>Universal Settings : {NAME}</u></b>
 
@@ -275,7 +275,7 @@ f'<a href="https://t.me/TELLYCLOUD_Bots"><b>❖𝐓𝐄𝐋𝐋𝐘𝐂𝐋𝐎�
 ├<b>🕵️Save Mode :</b> <code>{SAVE_MODE}</code>
 ╰<b>✉️User Bot PM :</b> <code>{BOT_PM}</code>
 
-f'<a href="https://t.me/TELLYCLOUD_Bots"><b>❖𝐓𝐄𝐋𝐋𝐘𝐂𝐋𝐎𝐔𝐃 𝐁𝐎𝐓𝐒™❖</b></a>'''
+<a href="https://t.me/TELLYCLOUD_Bots"><b>🫧💗✨𝐓𝐄𝐋𝐋𝐘𝐂𝐋𝐎𝐔𝐃 𝐁𝐎𝐓𝐒™🫧💗✨</b></a>'''
 
     MIRROR = '''㊂ <b><u>Mirror/Clone Settings : {NAME}</u></b>
 
@@ -288,7 +288,7 @@ f'<a href="https://t.me/TELLYCLOUD_Bots"><b>❖𝐓𝐄𝐋𝐋𝐘𝐂𝐋𝐎�
 ├<b>📝Total User TD(s) :</b> <i>{USERTD}</i>
 ╰<b>☁️Daily Mirror :</b> <code>{DM}</code> per day
 
-f'<a href="https://t.me/TELLYCLOUD_Bots"><b>❖𝐓𝐄𝐋𝐋𝐘𝐂𝐋𝐎𝐔𝐃 𝐁𝐎𝐓𝐒™❖</b></a>'''
+<a href="https://t.me/TELLYCLOUD_Bots"><b>🫧💗✨𝐓𝐄𝐋𝐋𝐘𝐂𝐋𝐎𝐔𝐃 𝐁𝐎𝐓𝐒™🫧💗✨</b></a>'''
 
     LEECH = '''㊂ <b><u>Leech Settings for {NAME}</u></b>
 
@@ -304,4 +304,4 @@ f'<a href="https://t.me/TELLYCLOUD_Bots"><b>❖𝐓𝐄𝐋𝐋𝐘𝐂𝐋𝐎�
 ├<b>📦Leech Dumps :</b> <code>{LDUMP}</code>
 ╰<b>🌈Leech Remname :</b> <code>{LREMNAME}</code>
 
-f'<a href="https://t.me/TELLYCLOUD_Bots"><b>❖𝐓𝐄𝐋𝐋𝐘𝐂𝐋𝐎𝐔𝐃 𝐁𝐎𝐓𝐒™❖</b></a>'''
+<a href="https://t.me/TELLYCLOUD_Bots"><b>🫧💗✨𝐓𝐄𝐋𝐋𝐘𝐂𝐋𝐎𝐔𝐃 𝐁𝐎𝐓𝐒™🫧💗✨</b></a>'''
