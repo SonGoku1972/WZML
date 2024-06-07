@@ -6,10 +6,14 @@ class WZMLStyle:
     ST_BN1_URL = 'https://t.me/tellyhubsupports'
     ST_BN2_NAME = 'Updates'
     ST_BN2_URL = 'https://t.me/tellycloud_bots'
+    ST_BN3_NAME = 'SFW Group'
+    ST_BN3_URL = 'https://t.me/leechcloud_sfw'
+    ST_BN4_NAME = 'NSFW Group'
+    ST_BN4_URL = 'https://t.me/leechcloud_nsfw'
     ST_MSG = '''<i>This bot can mirror all your links|files|torrents to Google Drive or any rclone cloud or to telegram or to ddl servers.</i>
 <b>Type {help_command} to get a list of available commands</b>'''
     ST_BOTPM = '''<i>Now, This bot will send all your files and links here. Start Using ...</i>'''
-    ST_UNAUTH = '''<i>You Are not authorized user! Deploy your own WZML-X Mirror-Leech bot</i>'''
+    ST_UNAUTH = '''<i>You Are not authorized user! Deploy your own TELLYCLOUD-BOTS Mirror-Leech bot</i>'''
     OWN_TOKEN_GENERATE = '''<b>Temporary Token is not yours!</b>\n\n<i>Kindly generate your own.</i>'''
     USED_TOKEN = '''<b>Temporary Token already used!</b>\n\n<i>Kindly generate a new one.</i>'''
     LOGGED_PASSWORD = '''<b>Bot Already Logged In via Password</b>\n\n<i>No Need to Accept Temp Tokens.</i>'''
@@ -185,8 +189,8 @@ class WZMLStyle:
     ELAPSED =        '\n├<b>👻Elapsed:</b> {Elapsed}'
     ENGINE =         '\n├<b>⛓️Engine:</b> {Engine}'
     STA_MODE =       '\n├<b>💠Mode:</b> {Mode}'
-    SEEDERS  =       '\n├<b>🌱Seeders:</b> {Seeders}'
-    LEECHERS =       '\n├<b>🐌Leechers:</b> {Leechers}'
+    SEEDERS  =       '\n├<b>🌱Seeders:</b> {Seeders} | '
+    LEECHERS =                                      '<b>🐌Leechers:</b> {Leechers}'
 
     ####--------SEEDING----------
     SEED_SIZE =      '\n├<b>📐Size : </b>{Size}'
