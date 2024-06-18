@@ -181,7 +181,7 @@ class WZMLStyle:
     STATUS_NAME =       '<b><i>{Name}</i></b>'
 
     #####---------PROGRESSIVE STATUS-------
-    BAR =            '\n╭  {Bar}'
+    BAR =            '<blockquote>\n╭  {Bar}'
     PROCESSED =      '\n├<b>🔄Sync:</b> {Processed}'
     STATUS =         '\n├<b>🌐Status:</b> <a href="{Url}">{Status}</a>'
     ETA =            '\n├<b>🍥ETA:</b> {Eta}'
@@ -208,10 +208,10 @@ class WZMLStyle:
     USER =           '\n├<b>👤User :</b> <code>{User}</code>'
     ID =             '\n├<b>🆔ID :</b> <code>{Id}</code>'
     BTSEL =          '\n├<b>🧲️Select :</b> {Btsel}'
-    CANCEL =         '\n╰<b>❌Cancel :</b> {Cancel}\n\n'
+    CANCEL =         '\n╰<b>❌Cancel :</b> {Cancel}</blockquote>\n\n'
 
     ####------FOOTER--------
-    FOOTER =      '⌬ <b><i>Bot Stats</i></b>\n'
+    FOOTER =      '<blockquote>⌬ <b><i>Bot Stats</i></b>\n'
     TASKS =          '├<b>🧮Tasks:</b> {Tasks}\n'
     BOT_TASKS =      '├<b>🥏Tasks:</b> {Tasks}/{Ttask} | <b>♟️AVL:</b> {Free}\n'
     Cpu =            '├<b>🖥CPU:</b> {cpu}% |'
@@ -219,7 +219,7 @@ class WZMLStyle:
     Ram =          '\n├ <b>🎟RAM:</b>{ram}% | '
     uptime =                     '<b>🟢UPTIME:</b>{uptime}'
     DL =           '\n╰<b>🔻DL:</b> {DL}/s | '
-    UL =                        '<b>🔺UL:</b> {UL}/s'
+    UL =                        '<b>🔺UL:</b> {UL}/s</blockquote>'
 
     ###--------BUTTONS-------
     PREVIOUS = '⏪Previous'
