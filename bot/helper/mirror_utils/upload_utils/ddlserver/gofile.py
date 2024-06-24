@@ -47,7 +47,7 @@ class Gofile:
 
     async def __getServer(self):
         async with ClientSession() as session:
-            async with session.get(f"{self.api_url}getServer") as resp:
+            async with session.get(f"{self.api_url}servers") as resp:
                 return await self.__resp_handler(await resp.json())
 
     async def __getAccount(self, check_account=False):
@@ -106,9 +106,7 @@ class Gofile:
         if password and len(password) < 4:
             raise ValueError("Password Length must be greater than 4")
 
-        serv = await self.__getServer()
-        LOGGER.info(serv)
-        server = choice(serv["servers"])["name"]
+        server = choice((await self.__getServer())["servers"])["name"]
         req_dict = {}
         if token := self.token or "":
             req_dict["token"] = token
