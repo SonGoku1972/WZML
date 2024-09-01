@@ -7,12 +7,11 @@ from uuid import uuid4
 from hashlib import sha256
 from time import sleep
 from re import findall, match, search
-from requests import Session, post, get, RequestException
 
 from requests.adapters import HTTPAdapter
 from urllib3.util.retry import Retry
 from lxml.etree import HTML
-from requests import Session, session as req_session, post
+from requests import Session, session as req_session, post, get, RequestException
 from urllib.parse import parse_qs, quote, unquote, urlparse, urljoin
 from cloudscraper import create_scraper
 from lk21 import Bypass
