@@ -241,7 +241,7 @@ async def get_tg_link_content(link, user_id, decrypter=None):
             raise TgLinkException('USER_SESSION_STRING or Private User Session required for this private link!')
 
     chat = msg.group(2)
-    msg_id1 = msg.group(3)
+    msg_id1 = msg[2]
     msg_id = int(msg.group(3))
     if "-" in msg_id1:
         start_id, end_id = msg_id1.split("-")
