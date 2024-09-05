@@ -248,7 +248,7 @@ async def get_tg_link_content(link, user_id, decrypter=None):
         msg_id1 = start_id = int(start_id)
         end_id = int(end_id)
         btw = end_id - start_id
-        if private:
+        if private and user:
             link = link.split("&message_id=")[0]
             links.append(f"{link}&message_id={start_id}")
             for _ in range(btw):
