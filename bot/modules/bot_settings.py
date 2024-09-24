@@ -1060,9 +1060,6 @@ async def event_handler(client, query, pfunc, rfunc, document=False):
 async def edit_bot_settings(client, query):
     data = query.data.split()
     message = query.message
-    if data[2] in ['DATABASE_URL', 'TELEGRAM_API', 'TELEGRAM_HASH', 'UPSTREAM_REPO', 'USER_SESSION_STRING', 'MEGA_PASSWORD'] and not await CustomFilters.owner(client, query):
-        await query.answer('Only owner can view this!', show_alert=True)
-        return
     if data[1] == 'close':
         handler_dict[message.chat.id] = False
         await query.answer()
