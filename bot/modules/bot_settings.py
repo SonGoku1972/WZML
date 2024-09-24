@@ -1060,6 +1060,9 @@ async def event_handler(client, query, pfunc, rfunc, document=False):
 async def edit_bot_settings(client, query):
     data = query.data.split()
     message = query.message
+    if data[2] in ['DATABASE_URL', 'TELEGRAM_API', 'TELEGRAM_HASH', 'UPSTREAM_REPO', 'USER_SESSION_STRING', 'MEGA_PASSWORD'] and not await CustomFilters.owner(client, query):
+        await query.answer('Only owner can view this!', show_alert=True)
+        return
     if data[1] == 'close':
         handler_dict[message.chat.id] = False
         await query.answer()
@@ -1179,24 +1182,9 @@ async def edit_bot_settings(client, query):
         pfunc = partial(update_private_file, pre_message=message)
         rfunc = partial(update_buttons, message)
         await event_handler(client, query, pfunc, rfunc, True)
-    # elif data[1] == 'boolvar':
-    #     handler_dict[message.chat.id] = False
-    #     value = data[3] == "on"
-    #     await query.answer(f'Successfully Var changed to {value}!', show_alert=True)
-    #     config_dict[data[2]] = value
-    #     if data[2] in ['DATABASE_URL', 'TELEGRAM_API', 'TELEGRAM_HASH', 'UPSTREAM_REPO', 'USER_SESSION_STRING', 'MEGA_PASSWORD'] and not await CustomFilters.owner(client, query):
-    #         value = "Only owner can view this!"
-    #     if not value and data[2] == 'INCOMPLETE_TASK_NOTIFIER' and DATABASE_URL:
-    #         await DbManger().trunc_table('tasks')
-    #     await update_buttons(message, data[2], 'editvar', False)
-    #     if DATABASE_URL:
-    #         await DbManger().update_config({data[2]: value})
     elif data[1] == 'boolvar':
         handler_dict[message.chat.id] = False
         value = data[3] == "on"
-        if data[2] in ['DATABASE_URL', 'TELEGRAM_API', 'TELEGRAM_HASH', 'UPSTREAM_REPO', 'USER_SESSION_STRING', 'MEGA_PASSWORD'] and not await CustomFilters.owner(client, query):
-            await query.answer('Only owner can view this!', show_alert=True)
-            return
         await query.answer(f'Successfully Var changed to {value}!', show_alert=True)
         config_dict[data[2]] = value
         if not value and data[2] == 'INCOMPLETE_TASK_NOTIFIER' and DATABASE_URL:
@@ -1204,7 +1192,6 @@ async def edit_bot_settings(client, query):
         await update_buttons(message, data[2], 'editvar', False)
         if DATABASE_URL:
             await DbManger().update_config({data[2]: value})
-      
     elif data[1] == 'editvar':
         handler_dict[message.chat.id] = False
         await query.answer()
