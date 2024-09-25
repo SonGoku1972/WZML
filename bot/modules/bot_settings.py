@@ -1203,7 +1203,7 @@ async def edit_bot_settings(client, query):
         value = f"{config_dict[data[2]]}"
         if value and data[2] in ['DATABASE_URL', 'TELEGRAM_API', 'TELEGRAM_HASH', 'UPSTREAM_REPO', 'USER_SESSION_STRING', 'MEGA_PASSWORD'] and not await CustomFilters.owner(client, query):
             value = "Only owner can view this!"
-        if len(str(value)) > 200:
+        if len(str(value)) > 500:
             await query.answer()
             with BytesIO(str.encode(value)) as out_file:
                 out_file.name = f"{data[2]}.txt"
