@@ -1211,7 +1211,7 @@ async def edit_bot_settings(client, query):
             value = None
         await query.answer(f'{value}', show_alert=True)
     value = f"{config_dict[data[2]]}"
-    elif value and data[2] in ['DATABASE_URL', 'TELEGRAM_API', 'TELEGRAM_HASH', 'UPSTREAM_REPO', 'USER_SESSION_STRING', 'MEGA_PASSWORD'] and not await CustomFilters.owner(client, query):
+    if value and data[2] in ['DATABASE_URL', 'TELEGRAM_API', 'TELEGRAM_HASH', 'UPSTREAM_REPO', 'USER_SESSION_STRING', 'MEGA_PASSWORD'] and not await CustomFilters.owner(client, query):
         value = "Only owner can view this!"
         if len(str(value)) > 500:
             await query.answer()
