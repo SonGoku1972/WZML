@@ -701,12 +701,11 @@ async def load_config():
         await DbManger().update_config(config_dict)
     await gather(initiate_search_tools(), start_from_queued(), rclone_serve_booter())
 
-
-async def get_buttons(key=None, edit_type=None, edit_mode=None, mess=None, query=None):
+async def get_buttons(client=None, key=None, edit_type=None, edit_mode=None, mess=None, query=None):
     buttons = ButtonMaker()
-    
+
     if key is None:
-        if not await CustomFilters.owner(client, query):
+        if not await CustomFilters.owner(client, query.message):
             buttons.ibutton('Config Variables', "botset var", alert="Only owner can view this")
         else:
             buttons.ibutton('Config Variables', "botset var")
@@ -726,7 +725,8 @@ async def get_buttons(key=None, edit_type=None, edit_mode=None, mess=None, query
     elif key == 'private':
         buttons.ibutton('Back', "botset back")
         buttons.ibutton('Close', "botset close")
-        msg = '''<u>Send any of these private files:</u>        
+        msg = '''<u>Send any of these private files:</u>
+
 <code>config.env, token.pickle, accounts.zip, list_drives.txt, categories.txt, shorteners.txt, cookies.txt, terabox.txt, .netrc or any other file!</code>
 
 <i>To delete private file send only the file name as text message with or without extension.</i>
