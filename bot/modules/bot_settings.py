@@ -2,6 +2,7 @@
 from random import choice
 from pyrogram.handlers import MessageHandler, CallbackQueryHandler
 from pyrogram.filters import command, regex, create
+from pyrogram.types import CallbackQuery
 from pyrogram.enums import ChatType
 from functools import partial
 from collections import OrderedDict
@@ -702,13 +703,14 @@ async def load_config():
     await gather(initiate_search_tools(), start_from_queued(), rclone_serve_booter())
 
 
-async def get_buttons(client=None, key=None, edit_type=None, edit_mode=None, mess=None, query=None):
+async def get_buttons(client=None, key=None, edit_type=None, edit_mode=None, mess=None, query: CallbackQuery = None):
     buttons = ButtonMaker()
 
     if key is None:
-        # Here we check if the user is the owner using the CustomFilters.owner filter
+        # Check if the user is the owner using the CustomFilters.owner filter
         if not await CustomFilters.owner(client, query):
-            buttons.ibutton('Config Variables', "botset var", alert="Only owner can view this")
+            # Send alert to non-owner users
+            await client.answer_callback_query(query.id, text="Only owner can view this", show_alert=True)
         else:
             buttons.ibutton('Config Variables', "botset var")
         buttons.ibutton('Private Files', "botset private")
@@ -728,7 +730,7 @@ async def get_buttons(client=None, key=None, edit_type=None, edit_mode=None, mes
         buttons.ibutton('Back', "botset back")
         buttons.ibutton('Close', "botset close")
         msg = '''<u>Send any of these private files:</u>
-  
+    
 <code>config.env, token.pickle, accounts.zip, list_drives.txt, categories.txt, shorteners.txt, cookies.txt, terabox.txt, .netrc or any other file!</code>
 
 <i>To delete private file send only the file name as text message with or without extension.</i>
