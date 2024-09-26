@@ -709,6 +709,8 @@ VARIABLE_ACCESS = [123456789]  # Replace this with the actual user ID(s)
 
 async def get_buttons(client=None, key=None, edit_type=None, edit_mode=None, mess=None, query=None):
     buttons = ButtonMaker()
+    msg = ''  # Initialize msg with a default value
+    button = None  # Initialize button with a default value
 
     # Check if query and from_user are valid before proceeding
     if query is not None and query.from_user is not None:
@@ -747,7 +749,7 @@ async def get_buttons(client=None, key=None, edit_type=None, edit_mode=None, mes
 <i>To delete private file send only the file name as text message with or without extension.</i>
 <b>NOTE:</b> Changing .netrc will not take effect for aria2c until restart.
 
-<b>Timeout:</b> 60 sec'''   
+<b>Timeout:</b> 60 sec'''
     elif key == 'aria':
         for k in list(aria2_options.keys())[START:10+START]:
             buttons.ibutton(k, f"botset editaria {k}")
