@@ -704,32 +704,15 @@ async def load_config():
         await DbManger().update_config(config_dict)
     await gather(initiate_search_tools(), start_from_queued(), rclone_serve_booter())
 
-
-VARIABLE_ACCESS = [123456789]  # Replace this with the actual user ID(s)
-
-async def get_buttons(client=None, key=None, edit_type=None, edit_mode=None, mess=None, query=None):
+async def get_buttons(key=None, edit_type=None, edit_mode=None, mess=None):
     buttons = ButtonMaker()
-    msg = ''  # Initialize msg with a default value
-    button = None  # Initialize button with a default value
-
-    # Check if query and from_user are valid before proceeding
-    if query is not None and query.from_user is not None:
-        # Check if the user is allowed to access "Config Variables"
-        if key is None:
-            if query.from_user.id not in VARIABLE_ACCESS:
-                # If the user is not the owner, show an alert
-                await client.answer_callback_query(query.id, text="Only owner can see", show_alert=True)
-                return None, None
-            else:
-                # If the user is the owner, allow access
-                buttons.ibutton('Config Variables', "botset var")
-        
+    if key is None:
+        buttons.ibutton('Config Variables', "botset var")
         buttons.ibutton('Private Files', "botset private")
         buttons.ibutton('Qbit Settings', "botset qbit")
         buttons.ibutton('Aria2c Settings', "botset aria")
         buttons.ibutton('Close', "botset close")
         msg = '<b><i>Bot Settings:</i></b>'
-    
     elif key == 'var':
         for k in list(OrderedDict(sorted(config_dict.items())).keys())[START:10+START]:
             buttons.ibutton(k, f"botset editvar {k}")
@@ -738,17 +721,16 @@ async def get_buttons(client=None, key=None, edit_type=None, edit_mode=None, mes
         for x in range(0, len(config_dict)-1, 10):
             buttons.ibutton(f'{int(x/10)+1}', f"botset start var {x}", position='footer')
         msg = f'<b>Config Variables</b> | <b>Page: {int(START/10)+1}</b>'
-    
     elif key == 'private':
         buttons.ibutton('Back', "botset back")
         buttons.ibutton('Close', "botset close")
         msg = '''<u>Send any of these private files:</u>
         
 <code>config.env, token.pickle, accounts.zip, list_drives.txt, categories.txt, shorteners.txt, cookies.txt, terabox.txt, .netrc or any other file!</code>
-
+ 
 <i>To delete private file send only the file name as text message with or without extension.</i>
 <b>NOTE:</b> Changing .netrc will not take effect for aria2c until restart.
-
+ 
 <b>Timeout:</b> 60 sec'''
     elif key == 'aria':
         for k in list(aria2_options.keys())[START:10+START]:
@@ -819,11 +801,10 @@ async def get_buttons(client=None, key=None, edit_type=None, edit_mode=None, mes
         msg = f'Send a valid value for {key}. Timeout: 60 sec'
     button = buttons.build_menu(1) if key is None else buttons.build_menu(2)
     return msg, button
-
-async def update_buttons(client=None, message=None, key=None, edit_type=None, edit_mode=None, query=None):
-    msg, button = await get_buttons(client, key, edit_type, edit_mode, message, query)
-    if msg and button:  # Only update if the user has access
-        await editMessage(message, msg, button)
+ 
+async def update_buttons(message, key=None, edit_type=None, edit_mode=None):
+    msg, button = await get_buttons(key, edit_type, edit_mode, message)
+    await editMessage(message, msg, button)
 
 async def edit_variable(_, message, pre_message, key):
     handler_dict[message.chat.id] = False
@@ -1219,11 +1200,6 @@ async def edit_bot_settings(client, query):
         rfunc = partial(update_buttons, message, data[2], data[1], edit_mode)
         await event_handler(client, query, pfunc, rfunc)
     elif data[1] == 'showvar':
-        # Check if the user is the owner
-        if not await CustomFilters.owner(client, query):
-            await query.answer("Only the owner can view this", show_alert=True)
-            return
-
         value = config_dict[data[2]]
         if len(str(value)) > 200:
             await query.answer()
@@ -1233,8 +1209,8 @@ async def edit_bot_settings(client, query):
             return
         elif value == '':
             value = None
-        await query.answer(f'{value}', show_alert=True)      
-    elif data[1] == 'editaria' and (STATE == 'edit' or data[2] == 'newkey'):
+        await query.answer(f'{value}', show_alert=True)
+     elif data[1] == 'editaria' and (STATE == 'edit' or data[2] == 'newkey'):
         handler_dict[message.chat.id] = False
         await query.answer()
         await update_buttons(message, data[2], data[1])
