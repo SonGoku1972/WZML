@@ -1210,7 +1210,7 @@ async def edit_bot_settings(client, query):
         elif value == '':
             value = None
         await query.answer(f'{value}', show_alert=True)
-     elif data[1] == 'editaria' and (STATE == 'edit' or data[2] == 'newkey'):
+    elif data[1] == 'editaria' and (STATE == 'edit' or data[2] == 'newkey'):
         handler_dict[message.chat.id] = False
         await query.answer()
         await update_buttons(message, data[2], data[1])
