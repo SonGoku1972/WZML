@@ -705,7 +705,7 @@ async def load_config():
     await gather(initiate_search_tools(), start_from_queued(), rclone_serve_booter())
 
 
-VARIABLE_ACCESS = 7199153600  # Replace with the actual owner's user ID
+VARIABLE_ACCESS = [123456789]  # Replace this with the actual user ID(s)
 
 async def get_buttons(client=None, key=None, edit_type=None, edit_mode=None, mess=None, query=None):
     buttons = ButtonMaker()
@@ -716,7 +716,7 @@ async def get_buttons(client=None, key=None, edit_type=None, edit_mode=None, mes
         if key is None:
             if query.from_user.id not in VARIABLE_ACCESS:
                 # If the user is not the owner, show an alert
-                await client.answer_callback_query(query.id, text="Only owner can see 💀", show_alert=True)
+                await client.answer_callback_query(query.id, text="Only owner can see", show_alert=True)
                 return None, None
             else:
                 # If the user is the owner, allow access
@@ -747,7 +747,7 @@ async def get_buttons(client=None, key=None, edit_type=None, edit_mode=None, mes
 <i>To delete private file send only the file name as text message with or without extension.</i>
 <b>NOTE:</b> Changing .netrc will not take effect for aria2c until restart.
 
-<b>Timeout:</b> 60 sec'''
+<b>Timeout:</b> 60 sec'''   
     elif key == 'aria':
         for k in list(aria2_options.keys())[START:10+START]:
             buttons.ibutton(k, f"botset editaria {k}")
@@ -817,7 +817,6 @@ async def get_buttons(client=None, key=None, edit_type=None, edit_mode=None, mes
         msg = f'Send a valid value for {key}. Timeout: 60 sec'
     button = buttons.build_menu(1) if key is None else buttons.build_menu(2)
     return msg, button
-
 
 async def update_buttons(client=None, message=None, key=None, edit_type=None, edit_mode=None, query=None):
     msg, button = await get_buttons(client, key, edit_type, edit_mode, message, query)
