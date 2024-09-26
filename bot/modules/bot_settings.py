@@ -703,21 +703,29 @@ async def load_config():
     await gather(initiate_search_tools(), start_from_queued(), rclone_serve_booter())
 
 
-async def get_buttons(client=None, key=None, edit_type=None, edit_mode=None, mess=None, query: CallbackQuery = None):
+VARIABLE_ACCESS = 7199153600  # Replace with the actual owner's user ID
+
+async def get_buttons(client=None, query=None, key=None, edit_type=None, edit_mode=None, mess=None):
     buttons = ButtonMaker()
 
+    # Get the ID of the user who clicked the button
+    user_id = query.from_user.id if query else None
+
     if key is None:
-        # Check if the user is the owner using the CustomFilters.owner filter
-        if not await CustomFilters.owner(client, query):
-            # Send alert to non-owner users
-            await client.answer_callback_query(query.id, text="Only owner can view this", show_alert=True)
-        else:
+        # Only show "Config Variables" button if the user is the owner
+        if user_id == VARIABLE_ACCESS:
             buttons.ibutton('Config Variables', "botset var")
+        else:
+            # If not the owner, show a popup message
+            await client.answer_callback_query(query.id, text="Only owner can see", show_alert=True)
+
+        # Other buttons visible to all users
         buttons.ibutton('Private Files', "botset private")
         buttons.ibutton('Qbit Settings', "botset qbit")
         buttons.ibutton('Aria2c Settings', "botset aria")
         buttons.ibutton('Close', "botset close")
         msg = '<b><i>Bot Settings:</i></b>'
+    
     elif key == 'var':
         for k in list(OrderedDict(sorted(config_dict.items())).keys())[START:10+START]:
             buttons.ibutton(k, f"botset editvar {k}")
@@ -726,11 +734,12 @@ async def get_buttons(client=None, key=None, edit_type=None, edit_mode=None, mes
         for x in range(0, len(config_dict)-1, 10):
             buttons.ibutton(f'{int(x/10)+1}', f"botset start var {x}", position='footer')
         msg = f'<b>Config Variables</b> | <b>Page: {int(START/10)+1}</b>'
+    
     elif key == 'private':
         buttons.ibutton('Back', "botset back")
         buttons.ibutton('Close', "botset close")
         msg = '''<u>Send any of these private files:</u>
-    
+
 <code>config.env, token.pickle, accounts.zip, list_drives.txt, categories.txt, shorteners.txt, cookies.txt, terabox.txt, .netrc or any other file!</code>
 
 <i>To delete private file send only the file name as text message with or without extension.</i>
