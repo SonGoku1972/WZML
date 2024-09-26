@@ -1200,15 +1200,21 @@ async def edit_bot_settings(client, query):
         rfunc = partial(update_buttons, message, data[2], data[1], edit_mode)
         await event_handler(client, query, pfunc, rfunc)
     elif data[1] == 'showvar':
-        # value = f"{config_dict[data[2]]}"
-        if value and data[2] in ['DATABASE_URL', 'TELEGRAM_API', 'TELEGRAM_HASH', 'UPSTREAM_REPO', 'USER_SESSION_STRING', 'MEGA_PASSWORD'] and not await CustomFilters.owner(client, query):
-            await query.answer('Only owner can view this!', show_alert=True)
-        if len(str(value)) > 500:
+        # Check if the user is the owner
+        if not await CustomFilters.owner(client, query):
+            await query.answer("Only the owner can view this", show_alert=True)
+            return
+
+        value = config_dict[data[2]]
+        if len(str(value)) > 200:
             await query.answer()
             with BytesIO(str.encode(value)) as out_file:
                 out_file.name = f"{data[2]}.txt"
                 await sendFile(message, out_file)
             return
+        elif value == '':
+            value = None
+        await query.answer(f'{value}', show_alert=True)      
     elif data[1] == 'editaria' and (STATE == 'edit' or data[2] == 'newkey'):
         handler_dict[message.chat.id] = False
         await query.answer()
