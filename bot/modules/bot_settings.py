@@ -29,6 +29,8 @@ from bot.modules.torrent_search import initiate_search_tools
 from bot.modules.rss import addJob
 from bot.helper.themes import AVL_THEMES
 
+VARIABLE_ACCESS = 7199153600  # Replace with the actual owner's user ID
+
 START = 0
 STATE = 'view'
 handler_dict = {}
@@ -705,21 +707,21 @@ async def load_config():
 
 VARIABLE_ACCESS = 7199153600  # Replace with the actual owner's user ID
 
-async def get_buttons(client=None, query=None, key=None, edit_type=None, edit_mode=None, mess=None):
+async def get_buttons(client=None, key=None, edit_type=None, edit_mode=None, mess=None, query=None):
     buttons = ButtonMaker()
 
-    # Get the ID of the user who clicked the button
-    user_id = query.from_user.id if query else None
-
-    if key is None:
-        # Only show "Config Variables" button if the user is the owner
-        if user_id == VARIABLE_ACCESS:
-            buttons.ibutton('Config Variables', "botset var")
-        else:
-            # If not the owner, show a popup message
-            await client.answer_callback_query(query.id, text="Only owner can see", show_alert=True)
-
-        # Other buttons visible to all users
+    # Check if query and from_user are valid before proceeding
+    if query is not None and query.from_user is not None:
+        # Check if the user is allowed to access "Config Variables"
+        if key is None:
+            if query.from_user.id not in VARIABLE_ACCESS:
+                # If the user is not the owner, show an alert
+                await client.answer_callback_query(query.id, text="Only owner can see 💀", show_alert=True)
+                return None, None
+            else:
+                # If the user is the owner, allow access
+                buttons.ibutton('Config Variables', "botset var")
+        
         buttons.ibutton('Private Files', "botset private")
         buttons.ibutton('Qbit Settings', "botset qbit")
         buttons.ibutton('Aria2c Settings', "botset aria")
@@ -739,7 +741,7 @@ async def get_buttons(client=None, query=None, key=None, edit_type=None, edit_mo
         buttons.ibutton('Back', "botset back")
         buttons.ibutton('Close', "botset close")
         msg = '''<u>Send any of these private files:</u>
-
+        
 <code>config.env, token.pickle, accounts.zip, list_drives.txt, categories.txt, shorteners.txt, cookies.txt, terabox.txt, .netrc or any other file!</code>
 
 <i>To delete private file send only the file name as text message with or without extension.</i>
@@ -817,10 +819,10 @@ async def get_buttons(client=None, query=None, key=None, edit_type=None, edit_mo
     return msg, button
 
 
-async def update_buttons(message, key=None, edit_type=None, edit_mode=None):
-    msg, button = await get_buttons(key, edit_type, edit_mode, message)
-    await editMessage(message, msg, button)
-
+async def update_buttons(client=None, message=None, key=None, edit_type=None, edit_mode=None, query=None):
+    msg, button = await get_buttons(client, key, edit_type, edit_mode, message, query)
+    if msg and button:  # Only update if the user has access
+        await editMessage(message, msg, button)
 
 async def edit_variable(_, message, pre_message, key):
     handler_dict[message.chat.id] = False
