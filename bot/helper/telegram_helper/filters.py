@@ -9,12 +9,17 @@ from bot.helper.telegram_helper.message_utils import chat_info
 class CustomFilters:
 
     async def owner_filter(self, _, message):
-        user = message.from_user or message.sender_chat
+        # Handling cases for both message and query
+        if message is not None:
+            user = message.from_user or message.sender_chat
+        else:
+            return False  # If message is None, we can't determine the user
+        
         uid = user.id
         return uid == OWNER_ID
 
     owner = create(owner_filter)
-
+    
     async def authorized_user(self, _, message):
         user = message.from_user or message.sender_chat
         uid = user.id
