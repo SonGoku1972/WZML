@@ -1273,16 +1273,16 @@ async def edit_bot_settings(client, query):
         await deleteMessage(message)
         await deleteMessage(message.reply_to_message)
 
-#Add logic to handle when non-owner users click buttons
+# Add logic to handle non-owner access to "Config Variables" button
 async def edit_bot_settings(_, callback_query):
-    # Check if the user is the owner
-    if CustomFilters.owner(_, callback_query):
-        # Proceed with normal functionality for owners
+    user_id = callback_query.from_user.id
+    if callback_query.data == "botset var" and not CustomFilters.owner(_, callback_query):
+        await callback_query.answer("Only owner can view Config Variables", show_alert=True)
+
+    elif CustomFilters.owner(_, callback_query) or CustomFilters.sudo(_, callback_query):
         await callback_query.answer("Editing bot settings...", show_alert=False)
-        # Here you can add additional logic for the owner's button interactions
     else:
-        # If user is not the owner, show a pop-up alert
-        await callback_query.answer("Only owner can see", show_alert=True)
+        await callback_query.answer("You don't have permission", show_alert=True)
 
 
 bot.add_handler(MessageHandler(bot_settings, filters=command(
