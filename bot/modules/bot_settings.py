@@ -1273,6 +1273,22 @@ async def edit_bot_settings(client, query):
         await deleteMessage(message)
         await deleteMessage(message.reply_to_message)
 
+#Add logic to handle when non-owner users click buttons
+async def edit_bot_settings(_, callback_query):
+    # Check if the user is the owner
+    if CustomFilters.owner(_, callback_query):
+        # Proceed with normal functionality for owners
+        await callback_query.answer("Editing bot settings...", show_alert=False)
+        # Here you can add additional logic for the owner's button interactions
+    else:
+        # If user is not the owner, show a pop-up alert
+        await callback_query.answer("Only owner can see", show_alert=True)
+
+
+bot.add_handler(MessageHandler(bot_settings, filters=command(
+    BotCommands.BotSetCommand) & CustomFilters.sudo))
+bot.add_handler(CallbackQueryHandler(edit_bot_settings,
+                filters=regex("^botset")))
 
 async def bot_settings(_, message):
     msg, button = await get_buttons()
@@ -1280,7 +1296,7 @@ async def bot_settings(_, message):
     await sendMessage(message, msg, button, 'IMAGES')
 
 
-bot.add_handler(MessageHandler(bot_settings, filters=command(
-    BotCommands.BotSetCommand) & CustomFilters.sudo))
-bot.add_handler(CallbackQueryHandler(edit_bot_settings,
-                filters=regex("^botset") & CustomFilters.owner))
+# bot.add_handler(MessageHandler(bot_settings, filters=command(
+#     BotCommands.BotSetCommand) & CustomFilters.sudo))
+# bot.add_handler(CallbackQueryHandler(edit_bot_settings,
+#                 filters=regex("^botset") & CustomFilters.owner))
