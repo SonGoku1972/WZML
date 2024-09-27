@@ -1285,18 +1285,13 @@ async def edit_bot_settings(_, callback_query):
         await callback_query.answer("You don't have permission", show_alert=True)
 
 
-bot.add_handler(MessageHandler(bot_settings, filters=command(
-    BotCommands.BotSetCommand) & CustomFilters.sudo))
-bot.add_handler(CallbackQueryHandler(edit_bot_settings,
-                filters=regex("^botset")))
 
 async def bot_settings(_, message):
     msg, button = await get_buttons()
     globals()['START'] = 0
     await sendMessage(message, msg, button, 'IMAGES')
 
-
-# bot.add_handler(MessageHandler(bot_settings, filters=command(
-#     BotCommands.BotSetCommand) & CustomFilters.sudo))
-# bot.add_handler(CallbackQueryHandler(edit_bot_settings,
-#                 filters=regex("^botset") & CustomFilters.owner))
+bot.add_handler(MessageHandler(bot_settings, filters=command(
+    BotCommands.BotSetCommand) & CustomFilters.sudo))
+bot.add_handler(CallbackQueryHandler(edit_bot_settings,
+                filters=regex("^botset") & CustomFilters.owner))
