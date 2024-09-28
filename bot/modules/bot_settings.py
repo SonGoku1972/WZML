@@ -706,6 +706,7 @@ async def load_config():
 
 async def get_buttons(key=None, edit_type=None, edit_mode=None, mess=None):
     buttons = ButtonMaker()
+    
     if key is None:
         buttons.ibutton('Config Variables', "botset var")
         buttons.ibutton('Private Files', "botset private")
@@ -713,11 +714,12 @@ async def get_buttons(key=None, edit_type=None, edit_mode=None, mess=None):
         buttons.ibutton('Aria2c Settings', "botset aria")
         buttons.ibutton('Close', "botset close")
         msg = '<b><i>Bot Settings:</i></b>'
+    
     elif key == 'var':
-        # Apply the restriction here
-        if not await CustomFilters.owner(_, mess):
+        # Apply the restriction here: Only owner can access 'Config Variables'
+        if not CustomFilters.owner(_, mess):
             await mess.answer("Only owner can view Config Variables", show_alert=True)
-            return None, None  # Return nothing to stop further processing
+            return None, None  # Stop further processing for non-owners
         else:
             for k in list(OrderedDict(sorted(config_dict.items())).keys())[START:10+START]:
                 buttons.ibutton(k, f"botset editvar {k}")
@@ -726,10 +728,11 @@ async def get_buttons(key=None, edit_type=None, edit_mode=None, mess=None):
             for x in range(0, len(config_dict)-1, 10):
                 buttons.ibutton(f'{int(x/10)+1}', f"botset start var {x}", position='footer')
             msg = f'<b>Config Variables</b> | <b>Page: {int(START/10)+1}</b>'
+    
     elif key == 'private':
         buttons.ibutton('Back', "botset back")
         buttons.ibutton('Close', "botset close")
-        msg = '''<u>Send any of these private files:</u
+        msg = '''<u>Send any of these private files:</u>
         
 <code>config.env, token.pickle, accounts.zip, list_drives.txt, categories.txt, shorteners.txt, cookies.txt, terabox.txt, .netrc or any other file!</code>
  
@@ -1279,13 +1282,17 @@ async def edit_bot_settings(client, query):
         await deleteMessage(message.reply_to_message)
 
 async def bot_settings(_, message):
-    msg, button = await get_buttons()
     globals()['START'] = 0
-    await sendMessage(message, msg, button, 'IMAGES')
+    msg, button = await get_buttons(mess=message)
+    if msg and button:
+        await sendMessage(message, msg, button, 'IMAGES')
 
-bot.add_handler(MessageHandler(bot_settings, filters=command(
-    BotCommands.BotSetCommand) & CustomFilters.sudo))
 
-bot.add_handler(CallbackQueryHandler(edit_bot_settings,
-                filters=regex("^botset") & CustomFilters.sudo))
+async def edit_bot_settings(_, callback_query):
+    msg, button = await get_buttons(key=callback_query.data.split()[1], mess=callback_query.message)
+    if msg and button:
+        await callback_query.message.edit_text(msg, reply_markup=button)
 
+# Add the handlers for both message and callback
+bot.add_handler(MessageHandler(bot_settings, filters=command(BotCommands.BotSetCommand) & CustomFilters.sudo))
+bot.add_handler(CallbackQueryHandler(edit_bot_settings, filters=regex("^botset") & CustomFilters.sudo))
