@@ -1276,12 +1276,13 @@ async def edit_bot_settings(client, query):
 # Add logic to handle non-owner access to "Config Variables" button
 async def edit_bot_settings(_, callback_query):
     user_id = callback_query.from_user.id
-    if callback_query.data == "botset var" and not CustomFilters.owner(_, callback_query):
-        await callback_query.answer("Only owner can view Config Variables", show_alert=True)
+    if callback_query.data == "botset var":
+        if not await CustomFilters.owner(_, callback_query):
+            await callback_query.answer("Only owner can view Config Variables", show_alert=True)
+        else:
+            await callback_query.answer()
     else:
-        await callback_query.answer("You don't have permission", show_alert=True)
-
-
+        await callback_query.answer()
 
 async def bot_settings(_, message):
     msg, button = await get_buttons()
@@ -1290,5 +1291,7 @@ async def bot_settings(_, message):
 
 bot.add_handler(MessageHandler(bot_settings, filters=command(
     BotCommands.BotSetCommand) & CustomFilters.sudo))
+
 bot.add_handler(CallbackQueryHandler(edit_bot_settings,
                 filters=regex("^botset") & CustomFilters.sudo))
+
