@@ -1278,9 +1278,6 @@ async def edit_bot_settings(_, callback_query):
     user_id = callback_query.from_user.id
     if callback_query.data == "botset var" and not CustomFilters.owner(_, callback_query):
         await callback_query.answer("Only owner can view Config Variables", show_alert=True)
-
-    elif CustomFilters.owner(_, callback_query) or CustomFilters.sudo(_, callback_query):
-        await callback_query.answer("Editing bot settings...", show_alert=False)
     else:
         await callback_query.answer("You don't have permission", show_alert=True)
 
