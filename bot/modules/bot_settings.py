@@ -1280,9 +1280,15 @@ async def edit_bot_settings(_, callback_query):
         if not await CustomFilters.owner(_, callback_query):
             await callback_query.answer("Only owner can view Config Variables", show_alert=True)
         else:
-            await callback_query.answer()
-    else:
-        await callback_query.answer()
+            await update_buttons(callback_query.message, key="var")
+    elif callback_query.data == "botset private":
+        await update_buttons(callback_query.message, key="private")
+    elif callback_query.data == "botset qbit":
+        await update_buttons(callback_query.message, key="qbit")
+    elif callback_query.data == "botset aria":
+        await update_buttons(callback_query.message, key="aria")
+    elif callback_query.data == "botset close":
+        await callback_query.message.delete()
 
 async def bot_settings(_, message):
     msg, button = await get_buttons()
