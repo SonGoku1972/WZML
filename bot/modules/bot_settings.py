@@ -704,9 +704,9 @@ async def load_config():
         await DbManger().update_config(config_dict)
     await gather(initiate_search_tools(), start_from_queued(), rclone_serve_booter())
 
-async def get_buttons(key=None, edit_type=None, edit_mode=None, mess=None):
+async def get_buttons(client, key=None, edit_type=None, edit_mode=None, mess=None):
     buttons = ButtonMaker()
-    
+  
     if key is None:
         buttons.ibutton('Config Variables', "botset var")
         buttons.ibutton('Private Files', "botset private")
@@ -1291,12 +1291,8 @@ async def bot_settings(_, message):
     if msg and button:
         await sendMessage(message, msg, button, 'IMAGES')
 
-async def edit_bot_settings(_, callback_query):
-    msg, button = await get_buttons(key=callback_query.data.split()[1], mess=callback_query.message)
+async def edit_bot_settings(client, callback_query):
+    msg, button = await get_buttons(client=client, key=callback_query.data.split()[1], mess=callback_query.message)
     if msg and button:
         await callback_query.message.edit_text(msg, reply_markup=button)
-
-bot.add_handler(MessageHandler(bot_settings, filters=command(BotCommands.BotSetCommand) & CustomFilters.sudo))
-bot.add_handler(CallbackQueryHandler(edit_bot_settings, filters=regex("^botset") & CustomFilters.sudo))        
-
 ############# THE END ########
