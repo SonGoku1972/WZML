@@ -714,17 +714,22 @@ async def get_buttons(key=None, edit_type=None, edit_mode=None, mess=None):
         buttons.ibutton('Close', "botset close")
         msg = '<b><i>Bot Settings:</i></b>'
     elif key == 'var':
-        for k in list(OrderedDict(sorted(config_dict.items())).keys())[START:10+START]:
-            buttons.ibutton(k, f"botset editvar {k}")
-        buttons.ibutton('Back', "botset back")
-        buttons.ibutton('Close', "botset close")
-        for x in range(0, len(config_dict)-1, 10):
-            buttons.ibutton(f'{int(x/10)+1}', f"botset start var {x}", position='footer')
-        msg = f'<b>Config Variables</b> | <b>Page: {int(START/10)+1}</b>'
+        # Apply the restriction here
+        if not await CustomFilters.owner(_, mess):
+            await mess.answer("Only owner can view Config Variables", show_alert=True)
+            return None, None  # Return nothing to stop further processing
+        else:
+            for k in list(OrderedDict(sorted(config_dict.items())).keys())[START:10+START]:
+                buttons.ibutton(k, f"botset editvar {k}")
+            buttons.ibutton('Back', "botset back")
+            buttons.ibutton('Close', "botset close")
+            for x in range(0, len(config_dict)-1, 10):
+                buttons.ibutton(f'{int(x/10)+1}', f"botset start var {x}", position='footer')
+            msg = f'<b>Config Variables</b> | <b>Page: {int(START/10)+1}</b>'
     elif key == 'private':
         buttons.ibutton('Back', "botset back")
         buttons.ibutton('Close', "botset close")
-        msg = '''<u>Send any of these private files:</u>
+        msg = '''<u>Send any of these private files:</u
         
 <code>config.env, token.pickle, accounts.zip, list_drives.txt, categories.txt, shorteners.txt, cookies.txt, terabox.txt, .netrc or any other file!</code>
  
@@ -1272,23 +1277,6 @@ async def edit_bot_settings(client, query):
                                                    && git push origin {config_dict['UPSTREAM_BRANCH']} -qf")).wait()
         await deleteMessage(message)
         await deleteMessage(message.reply_to_message)
-
-# Add logic to handle non-owner access to "Config Variables" button
-async def edit_bot_settings(_, callback_query):
-    user_id = callback_query.from_user.id
-    if callback_query.data == "botset var":
-        if not await CustomFilters.owner(_, callback_query):
-            await callback_query.answer("Only owner can view Config Variables", show_alert=True)
-        else:
-            await update_buttons(callback_query.message, key="var")
-    elif callback_query.data == "botset private":
-        await update_buttons(callback_query.message, key="private")
-    elif callback_query.data == "botset qbit":
-        await update_buttons(callback_query.message, key="qbit")
-    elif callback_query.data == "botset aria":
-        await update_buttons(callback_query.message, key="aria")
-    elif callback_query.data == "botset close":
-        await callback_query.message.delete()
 
 async def bot_settings(_, message):
     msg, button = await get_buttons()
