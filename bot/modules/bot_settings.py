@@ -704,9 +704,8 @@ async def load_config():
         await DbManger().update_config(config_dict)
     await gather(initiate_search_tools(), start_from_queued(), rclone_serve_booter())
 
-async def get_buttons(key=None, edit_type=None, edit_mode=None, mess=None):
+async def get_buttons(client=None, key=None, edit_type=None, edit_mode=None, mess=None):
     buttons = ButtonMaker()
-    
     if key is None:
         buttons.ibutton('Config Variables', "botset var")
         buttons.ibutton('Private Files', "botset private")
@@ -714,12 +713,11 @@ async def get_buttons(key=None, edit_type=None, edit_mode=None, mess=None):
         buttons.ibutton('Aria2c Settings', "botset aria")
         buttons.ibutton('Close', "botset close")
         msg = '<b><i>Bot Settings:</i></b>'
-    
     elif key == 'var':
-        # Apply the restriction here: Only owner can access 'Config Variables'
-        if not CustomFilters.owner(_, mess):
+        # Apply the restriction here
+        if not await CustomFilters.owner(client, mess):
             await mess.answer("Only owner can view Config Variables", show_alert=True)
-            return None, None  # Stop further processing for non-owners
+            return None, None  # Stop further processing
         else:
             for k in list(OrderedDict(sorted(config_dict.items())).keys())[START:10+START]:
                 buttons.ibutton(k, f"botset editvar {k}")
@@ -728,7 +726,6 @@ async def get_buttons(key=None, edit_type=None, edit_mode=None, mess=None):
             for x in range(0, len(config_dict)-1, 10):
                 buttons.ibutton(f'{int(x/10)+1}', f"botset start var {x}", position='footer')
             msg = f'<b>Config Variables</b> | <b>Page: {int(START/10)+1}</b>'
-    
     elif key == 'private':
         buttons.ibutton('Back', "botset back")
         buttons.ibutton('Close', "botset close")
@@ -767,13 +764,77 @@ async def get_buttons(key=None, edit_type=None, edit_mode=None, mess=None):
                 f'{int(x/10)+1}', f"botset start qbit {x}", position='footer')
         msg = f'Qbittorrent Options | Page: {int(START/10)+1} | State: {STATE}'
     elif edit_type == 'editvar':
+async def get_buttons(key=None, edit_type=None, edit_mode=None, mess=None):
+    buttons = ButtonMaker()
+    
+    if key is None:
+        buttons.ibutton('Config Variables', "botset var")
+        buttons.ibutton('Private Files', "botset private")
+        buttons.ibutton('Qbit Settings', "botset qbit")
+        buttons.ibutton('Aria2c Settings', "botset aria")
+        buttons.ibutton('Close', "botset close")
+        msg = '<b><i>Bot Settings:</i></b>'
+    
+    elif key == 'var':
+        # Check if the user is the owner
+        if not await CustomFilters.owner(_, mess):
+            await mess.answer("Only owner can view Config Variables", show_alert=True)
+            return None, None  # Stop further processing for non-owners
+        else:
+            for k in list(OrderedDict(sorted(config_dict.items())).keys())[START:10+START]:
+                buttons.ibutton(k, f"botset editvar {k}")
+            buttons.ibutton('Back', "botset back")
+            buttons.ibutton('Close', "botset close")
+            for x in range(0, len(config_dict)-1, 10):
+                buttons.ibutton(f'{int(x/10)+1}', f"botset start var {x}", position='footer')
+            msg = f'<b>Config Variables</b> | <b>Page: {int(START/10)+1}</b>'
+    
+    elif key == 'private':
+        buttons.ibutton('Back', "botset back")
+        buttons.ibutton('Close', "botset close")
+        msg = '''<u>Send any of these private files:</u>
+        
+<code>config.env, token.pickle, accounts.zip, list_drives.txt, categories.txt, shorteners.txt, cookies.txt, terabox.txt, .netrc or any other file!</code>
+ 
+<i>To delete private file send only the file name as text message with or without extension.</i>
+<b>NOTE:</b> Changing .netrc will not take effect for aria2c until restart.
+ 
+<b>Timeout:</b> 60 sec'''
+
+    elif key == 'aria':
+        for k in list(aria2_options.keys())[START:10+START]:
+            buttons.ibutton(k, f"botset editaria {k}")
+        if STATE == 'view':
+            buttons.ibutton('Edit', "botset edit aria")
+        else:
+            buttons.ibutton('View', "botset view aria")
+        buttons.ibutton('Add New key', "botset editaria newkey")
+        buttons.ibutton('Back', "botset back")
+        buttons.ibutton('Close', "botset close")
+        for x in range(0, len(aria2_options)-1, 10):
+            buttons.ibutton(f'{int(x/10)+1}', f"botset start aria {x}", position='footer')
+        msg = f'Aria2c Options | Page: {int(START/10)+1} | State: {STATE}'
+        
+    elif key == 'qbit':
+        for k in list(qbit_options.keys())[START:10+START]:
+            buttons.ibutton(k, f"botset editqbit {k}")
+        if STATE == 'view':
+            buttons.ibutton('Edit', "botset edit qbit")
+        else:
+            buttons.ibutton('View', "botset view qbit")
+        buttons.ibutton('Back', "botset back")
+        buttons.ibutton('Close', "botset close")
+        for x in range(0, len(qbit_options)-1, 10):
+            buttons.ibutton(f'{int(x/10)+1}', f"botset start qbit {x}", position='footer')
+        msg = f'Qbittorrent Options | Page: {int(START/10)+1} | State: {STATE}'
+        
+    elif edit_type == 'editvar':
         msg = f'<b>Variable:</b> <code>{key}</code>\n\n'
         msg += f'<b>Description:</b> {default_desp.get(key, "No Description Provided")}\n\n'
         if mess.chat.type == ChatType.PRIVATE:
             msg += f'<b>Value:</b> <spoiler> {config_dict.get(key, "None")} </spoiler>\n\n'
         else:
-            buttons.ibutton('View Var Value',
-                            f"botset showvar {key}", position="header")
+            buttons.ibutton('View Var Value', f"botset showvar {key}", position="header")
         buttons.ibutton('Back', "botset back var", position="footer")
         if key not in bool_vars:
             if not edit_mode:
@@ -783,8 +844,7 @@ async def get_buttons(key=None, edit_type=None, edit_mode=None, mess=None):
         if key not in ['TELEGRAM_HASH', 'TELEGRAM_API', 'OWNER_ID', 'BOT_TOKEN'] and key not in bool_vars:
             buttons.ibutton('Reset', f"botset resetvar {key}")
         buttons.ibutton('Close', "botset close", position="footer")
-        if edit_mode and key in ['SUDO_USERS', 'CMD_SUFFIX', 'OWNER_ID', 'USER_SESSION_STRING', 'TELEGRAM_HASH',
-                                 'TELEGRAM_API', 'AUTHORIZED_CHATS', 'DATABASE_URL', 'BOT_TOKEN', 'DOWNLOAD_DIR']:
+        if edit_mode and key in ['SUDO_USERS', 'CMD_SUFFIX', 'OWNER_ID', 'USER_SESSION_STRING', 'TELEGRAM_HASH', 'TELEGRAM_API', 'AUTHORIZED_CHATS', 'DATABASE_URL', 'BOT_TOKEN', 'DOWNLOAD_DIR']:
             msg += '<b>Note:</b> Restart required for this edit to take effect!\n\n'
         if edit_mode and key not in bool_vars:
             msg += '<i>Send a valid value for the above Var.</i> <b>Timeout:</b> 60 sec'
@@ -792,6 +852,7 @@ async def get_buttons(key=None, edit_type=None, edit_mode=None, mess=None):
             msg += '<i>Choose a valid value for the above Var</i>'
             buttons.ibutton('True', f"botset boolvar {key} on")
             buttons.ibutton('False', f"botset boolvar {key} off")
+            
     elif edit_type == 'editaria':
         buttons.ibutton('Back', "botset back aria")
         if key != 'newkey':
@@ -802,11 +863,13 @@ async def get_buttons(key=None, edit_type=None, edit_mode=None, mess=None):
             msg = 'Send a key with value. Example: https-proxy-user:value'
         else:
             msg = f'Send a valid value for {key}. Timeout: 60 sec'
+            
     elif edit_type == 'editqbit':
         buttons.ibutton('Back', "botset back qbit")
         buttons.ibutton('Empty String', f"botset emptyqbit {key}")
         buttons.ibutton('Close', "botset close")
         msg = f'Send a valid value for {key}. Timeout: 60 sec'
+
     button = buttons.build_menu(1) if key is None else buttons.build_menu(2)
     return msg, button
  
@@ -1287,12 +1350,12 @@ async def bot_settings(_, message):
     if msg and button:
         await sendMessage(message, msg, button, 'IMAGES')
 
-
 async def edit_bot_settings(_, callback_query):
     msg, button = await get_buttons(key=callback_query.data.split()[1], mess=callback_query.message)
     if msg and button:
         await callback_query.message.edit_text(msg, reply_markup=button)
 
-# Add the handlers for both message and callback
 bot.add_handler(MessageHandler(bot_settings, filters=command(BotCommands.BotSetCommand) & CustomFilters.sudo))
 bot.add_handler(CallbackQueryHandler(edit_bot_settings, filters=regex("^botset") & CustomFilters.sudo))
+
+############# THE END ########
