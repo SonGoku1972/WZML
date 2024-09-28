@@ -717,7 +717,7 @@ async def get_buttons(key=None, edit_type=None, edit_mode=None, mess=None):
     
     elif key == 'var':
         # Check if the user is the owner
-        if not await CustomFilters.owner(_, mess):
+        if not await CustomFilters.owner(client, mess):
             await mess.answer("Only owner can view Config Variables", show_alert=True)
             return None, None  # Stop further processing for non-owners
         else:
@@ -809,7 +809,8 @@ async def get_buttons(key=None, edit_type=None, edit_mode=None, mess=None):
         buttons.ibutton('Empty String', f"botset emptyqbit {key}")
         buttons.ibutton('Close', "botset close")
         msg = f'Send a valid value for {key}. Timeout: 60 sec'
-
+      
+    msg = msg if msg else 'Invalid Option'
     button = buttons.build_menu(1) if key is None else buttons.build_menu(2)
     return msg, button
  
