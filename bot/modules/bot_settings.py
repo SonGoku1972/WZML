@@ -712,10 +712,10 @@ async def get_buttons(key=None, edit_type=None, edit_mode=None, mess=None):
         buttons.ibutton('Close', "botset close")
         msg = '<b><i>Bot Settings:</i></b>'
     elif key == 'var':
-        # Filter to check if the user is the owner
-        if not await CustomFilters.owner(query._client, query.message):
-            await query.answer("You don't have permission to open Variables 🥹", show_alert=True)
-            return None, None
+        # # Filter to check if the user is the owner
+        # if not await CustomFilters.owner(query._client, query.message):
+        #     await query.answer("You don't have permission to open Variables 🥹", show_alert=True)
+        #     return None, None
         for k in list(OrderedDict(sorted(config_dict.items())).keys())[START:10+START]:
             buttons.ibutton(k, f"botset editvar {k}")
         buttons.ibutton('Back', "botset back")
