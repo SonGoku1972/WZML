@@ -1287,18 +1287,18 @@ async def edit_bot_settings(client, query):
 
 async def bot_settings(client, message):
     globals()['START'] = 0
-    msg, button = await get_buttons(mess=message)
+    msg, button = await get_buttons(client=client, mess=message)  # Pass 'client' here
     if msg and button:
         await sendMessage(message, msg, button, 'IMAGES')
 
 async def edit_bot_settings(client, callback_query):
+    # Pass 'client' here as well
     msg, button = await get_buttons(client=client, key=callback_query.data.split()[1], mess=callback_query.message)
     if msg and button:
         await callback_query.message.edit_text(msg, reply_markup=button)
 
-bot.add_handler(MessageHandler(bot_settings, filters=command(
-    BotCommands.BotSetCommand) & CustomFilters.sudo))
-bot.add_handler(CallbackQueryHandler(edit_bot_settings,
-                filters=regex("^botset") & CustomFilters.sudo))
+# Handler to add bot settings command
+bot.add_handler(MessageHandler(bot_settings, filters=command(BotCommands.BotSetCommand) & CustomFilters.sudo))
 
-############# THE END ########
+# Handler to process callback queries for bot settings
+bot.add_handler(CallbackQueryHandler(edit_bot_settings, filters=regex("^botset") & CustomFilters.sudo))
