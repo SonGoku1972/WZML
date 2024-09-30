@@ -1,9 +1,6 @@
 #!/usr/bin/env python3
 from pyrogram.filters import create
 from pyrogram.enums import ChatType
-
-from pyrogram.filters import create
-from pyrogram.enums import ChatType
  
 from bot import user_data, OWNER_ID
 from bot.helper.telegram_helper.message_utils import chat_info
@@ -17,7 +14,7 @@ class CustomFilters:
         return uid == OWNER_ID
  
     owner = create(owner_filter)
-    
+ 
     async def authorized_user(self, _, message):
         user = message.from_user or message.sender_chat
         uid = user.id
@@ -34,7 +31,7 @@ class CustomFilters:
                 or (is_forum.reply_to_top_message_id in topic_ids)))):
                 auth_chat = True
         return auth_chat
-
+ 
     authorized = create(authorized_user)
     
     async def authorized_usetting(self, _, message):
@@ -56,12 +53,12 @@ class CustomFilters:
         return isExists
         
     authorized_uset = create(authorized_usetting)
-
+ 
     async def sudo_user(self, _, message):
         user = message.from_user or message.sender_chat
         uid = user.id
         return bool(uid == OWNER_ID or uid in user_data and user_data[uid].get('is_sudo'))
-
+ 
     sudo = create(sudo_user)
     
     async def blacklist_user(self, _, message):
@@ -70,3 +67,4 @@ class CustomFilters:
         return bool(uid != OWNER_ID and uid in user_data and user_data[uid].get('is_blacklist'))
         
     blacklisted = create(blacklist_user)
+ 
