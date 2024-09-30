@@ -701,9 +701,9 @@ async def load_config():
         await DbManger().update_config(config_dict)
     await gather(initiate_search_tools(), start_from_queued(), rclone_serve_booter())
  
- 
 async def get_buttons(key=None, edit_type=None, edit_mode=None, mess=None):
     buttons = ButtonMaker()
+
     if key is None:
         buttons.ibutton('Config Variables', "botset var")
         buttons.ibutton('Private Files', "botset private")
@@ -712,13 +712,17 @@ async def get_buttons(key=None, edit_type=None, edit_mode=None, mess=None):
         buttons.ibutton('Close', "botset close")
         msg = '<b><i>Bot Settings:</i></b>'
     elif key == 'var':
+        # Filter to check if the user is the owner
+        if not await CustomFilters.owner(mess._client, mess):
+            await mess.answerCallbackQuery("You don't have permission to open Variables", show_alert=True)
+            return None, None
         for k in list(OrderedDict(sorted(config_dict.items())).keys())[START:10+START]:
             buttons.ibutton(k, f"botset editvar {k}")
         buttons.ibutton('Back', "botset back")
         buttons.ibutton('Close', "botset close")
         for x in range(0, len(config_dict)-1, 10):
             buttons.ibutton(f'{int(x/10)+1}', f"botset start var {x}", position='footer')
-        msg = f'<b>Config Variables</b> | <b>Page: {int(START/10)+1}</b>'
+        msg = f'<b>Config Variables</b> | <b>Page: {int(START/10)+1}</b>' 
     elif key == 'private':
         buttons.ibutton('Back', "botset back")
         buttons.ibutton('Close', "botset close")
