@@ -1077,12 +1077,12 @@ async def edit_bot_settings(client, query):
             globals()['START'] = 0
         await update_buttons(message, key)
     elif data[1] in ['var', 'aria', 'qbit']:
-    # Check if the user is the owner for the 'var' key
-    if data[1] == 'var' and not await CustomFilters.owner(client, query):
-        await query.answer("You don't have permission to open Variables", show_alert=True)
-        return  # Exit early if the user is not the owner 
-    await query.answer()
-    await update_buttons(message, data[1])
+        # Check if the user is the owner for the 'var' key
+        if data[1] == 'var' and not await CustomFilters.owner(client, query):
+            await query.answer("You don't have permission to open Variables", show_alert=True)
+            return  # Exit early if the user is not the owner 
+        await query.answer()
+        await update_buttons(message, data[1]) 
     elif data[1] == 'resetvar':
         handler_dict[message.chat.id] = False
         await query.answer('Reset Done!', show_alert=True)
