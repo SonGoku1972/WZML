@@ -718,7 +718,7 @@ async def get_buttons(client, key=None, edit_type=None, edit_mode=None, mess=Non
     elif key == 'var':
         # Check if the user is the owner
         if not await CustomFilters.owner(client, mess):
-            await mess.answer("Only owner can view Config Variables", show_alert=True)
+            await callback_query.answer("Only owner can view Config Variables", show_alert=True)
             return None, None  # Stop further processing for non-owners
         else:
             for k in list(OrderedDict(sorted(config_dict.items())).keys())[START:10+START]:
