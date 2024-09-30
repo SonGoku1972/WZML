@@ -718,8 +718,8 @@ async def get_buttons(client, key=None, edit_type=None, edit_mode=None, mess=Non
     elif key == 'var':
         # Check if the user is the owner
         if not await CustomFilters.owner(client, mess):
-            await CallbackQuery.answer("Only owner can view Config Variables", show_alert=True)
-            return None, None  # Stop further processing for non-owners
+           await callback_query.answer("Only owner can view Config Variables", show_alert=True)
+        return None, None  # Stop further processing for non-owners
         else:
             for k in list(OrderedDict(sorted(config_dict.items())).keys())[START:10+START]:
                 buttons.ibutton(k, f"botset editvar {k}")
@@ -1293,9 +1293,7 @@ async def bot_settings(client, message):
 
 async def edit_bot_settings(client, callback_query):
     # Pass 'client' here as well
-    msg, button = await get_buttons(client=client, key=callback_query.data.split()[1], mess=callback_query.message)
-    if msg and button:
-        await callback_query.message.edit_text(msg, reply_markup=button)
+    msg, button = await get_buttons(client=client, key=callback_query.data.split()[1], mess=callback_query.message, callback_query=callback_query)
 
 # Handler to add bot settings command
 bot.add_handler(MessageHandler(bot_settings, filters=command(BotCommands.BotSetCommand) & CustomFilters.sudo))
