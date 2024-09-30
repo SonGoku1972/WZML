@@ -1295,4 +1295,10 @@ async def edit_bot_settings(client, callback_query):
     msg, button = await get_buttons(client=client, key=callback_query.data.split()[1], mess=callback_query.message)
     if msg and button:
         await callback_query.message.edit_text(msg, reply_markup=button)
+
+bot.add_handler(MessageHandler(bot_settings, filters=command(
+    BotCommands.BotSetCommand) & CustomFilters.sudo))
+bot.add_handler(CallbackQueryHandler(edit_bot_settings,
+                filters=regex("^botset") & CustomFilters.sudo))
+
 ############# THE END ########
