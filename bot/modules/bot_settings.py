@@ -2,7 +2,6 @@
 from random import choice
 from pyrogram.handlers import MessageHandler, CallbackQueryHandler
 from pyrogram.filters import command, regex, create
-from pyrogram.types import CallbackQuery
 from pyrogram.enums import ChatType
 from functools import partial
 from collections import OrderedDict
@@ -14,7 +13,7 @@ from dotenv import load_dotenv
 from time import time
 from io import BytesIO
 from aioshutil import rmtree as aiormtree
-
+ 
 from bot import config_dict, user_data, DATABASE_URL, MAX_SPLIT_SIZE, list_drives_dict, categories_dict, aria2, GLOBAL_EXTENSION_FILTER, status_reply_dict_lock, Interval, aria2_options, aria2c_global, IS_PREMIUM_USER, download_dict, qbit_options, get_client, LOGGER, bot, extra_buttons, shorteners_list
 from bot.helper.telegram_helper.message_utils import sendMessage, sendFile, editMessage, deleteMessage, update_all_messages
 from bot.helper.telegram_helper.filters import CustomFilters
@@ -28,9 +27,7 @@ from bot.helper.mirror_utils.rclone_utils.serve import rclone_serve_booter
 from bot.modules.torrent_search import initiate_search_tools
 from bot.modules.rss import addJob
 from bot.helper.themes import AVL_THEMES
-
-VARIABLE_ACCESS = 7199153600  # Replace with the actual owner's user ID
-
+ 
 START = 0
 STATE = 'view'
 handler_dict = {}
@@ -53,56 +50,56 @@ default_values = {'AUTO_DELETE_MESSAGE_DURATION': 30,
 bool_vars = ['AS_DOCUMENT', 'BOT_PM', 'STOP_DUPLICATE', 'SET_COMMANDS', 'SAVE_MSG', 'SHOW_MEDIAINFO', 'SOURCE_LINK', 'SAFE_MODE', 'SHOW_EXTRA_CMDS',
              'IS_TEAM_DRIVE', 'USE_SERVICE_ACCOUNTS', 'WEB_PINCODE', 'EQUAL_SPLITS', 'DISABLE_DRIVE_LINK', 'DELETE_LINKS', 'CLEAN_LOG_MSG', 'USER_TD_MODE', 
              'INCOMPLETE_TASK_NOTIFIER', 'UPGRADE_PACKAGES', 'SCREENSHOTS_MODE']
-
-
+ 
+ 
 async def load_config():
-
+ 
     BOT_TOKEN = environ.get('BOT_TOKEN', '')
     if len(BOT_TOKEN) == 0:
         BOT_TOKEN = config_dict['BOT_TOKEN']
-
+ 
     TELEGRAM_API = environ.get('TELEGRAM_API', '')
     if len(TELEGRAM_API) == 0:
         TELEGRAM_API = config_dict['TELEGRAM_API']
     else:
         TELEGRAM_API = int(TELEGRAM_API)
-
+ 
     TELEGRAM_HASH = environ.get('TELEGRAM_HASH', '')
     if len(TELEGRAM_HASH) == 0:
         TELEGRAM_HASH = config_dict['TELEGRAM_HASH']
-
+ 
     BOT_MAX_TASKS = environ.get('BOT_MAX_TASKS', '')
     BOT_MAX_TASKS = int(BOT_MAX_TASKS) if BOT_MAX_TASKS.isdigit() else ''
     
     OWNER_ID = environ.get('OWNER_ID', '')
     OWNER_ID = config_dict['OWNER_ID'] if len(OWNER_ID) == 0 else int(OWNER_ID)
-
+ 
     DATABASE_URL = environ.get('DATABASE_URL', '')
     if len(DATABASE_URL) == 0:
         DATABASE_URL = ''
-
+ 
     DOWNLOAD_DIR = environ.get('DOWNLOAD_DIR', '')
     if len(DOWNLOAD_DIR) == 0:
         DOWNLOAD_DIR = '/usr/src/app/downloads/'
     elif not DOWNLOAD_DIR.endswith("/"):
         DOWNLOAD_DIR = f'{DOWNLOAD_DIR}/'
-
+ 
     GDRIVE_ID = environ.get('GDRIVE_ID', '')
     if len(GDRIVE_ID) == 0:
         GDRIVE_ID = ''
-
+ 
     RCLONE_PATH = environ.get('RCLONE_PATH', '')
     if len(RCLONE_PATH) == 0:
         RCLONE_PATH = ''
-
+ 
     DEFAULT_UPLOAD = environ.get('DEFAULT_UPLOAD', '')
     if DEFAULT_UPLOAD != 'rc' and DEFAULT_UPLOAD != 'ddl':
         DEFAULT_UPLOAD = 'gd'
-
+ 
     RCLONE_FLAGS = environ.get('RCLONE_FLAGS', '')
     if len(RCLONE_FLAGS) == 0:
         RCLONE_FLAGS = ''
-
+ 
     AUTHORIZED_CHATS = environ.get('AUTHORIZED_CHATS', '')
     if len(AUTHORIZED_CHATS) != 0:
         aid = AUTHORIZED_CHATS.split()
@@ -112,7 +109,7 @@ async def load_config():
             user_data.setdefault(chat_id, {'is_auth': True})
             if topic_ids:
                 user_data[chat_id].setdefault('topic_ids', []).extend(map(int, topic_ids))
-
+ 
     SUDO_USERS = environ.get('SUDO_USERS', '')
     if len(SUDO_USERS) != 0:
         aid = SUDO_USERS.split()
@@ -124,7 +121,7 @@ async def load_config():
         aid = BLACKLIST_USERS.split()
         for id_ in aid:
             user_data[int(id_.strip())] = {'is_blacklist': True}
-
+ 
     EXTENSION_FILTER = environ.get('EXTENSION_FILTER', '')
     if len(EXTENSION_FILTER) > 0:
         fx = EXTENSION_FILTER.split()
@@ -133,7 +130,7 @@ async def load_config():
         for x in fx:
             x = x.lstrip('.')
             GLOBAL_EXTENSION_FILTER.append(x.strip().lower())
-
+ 
     MEGA_EMAIL = environ.get('MEGA_EMAIL', '')
     MEGA_PASSWORD = environ.get('MEGA_PASSWORD', '')
     if len(MEGA_EMAIL) == 0 or len(MEGA_PASSWORD) == 0:
@@ -147,7 +144,7 @@ async def load_config():
     JIODRIVE_TOKEN = environ.get('JIODRIVE_TOKEN', '')
     if len(JIODRIVE_TOKEN) == 0:
         JIODRIVE_TOKEN = ''
-
+ 
     REAL_DEBRID_API = environ.get('REAL_DEBRID_API', '')
     if len(REAL_DEBRID_API) == 0:
         REAL_DEBRID_API = ''
@@ -155,15 +152,15 @@ async def load_config():
     DEBRID_LINK_API = environ.get('DEBRID_LINK_API', '')
     if len(DEBRID_LINK_API) == 0:
         DEBRID_LINK_API = ''
-
+ 
     INDEX_URL = environ.get('INDEX_URL', '').rstrip("/")
     if len(INDEX_URL) == 0:
         INDEX_URL = ''
-
+ 
     SEARCH_API_LINK = environ.get('SEARCH_API_LINK', '').rstrip("/")
     if len(SEARCH_API_LINK) == 0:
         SEARCH_API_LINK = ''
-
+ 
     CAP_FONT = environ.get('CAP_FONT', '').lower()
     if CAP_FONT.strip() not in ['', 'b', 'i', 'u', 's', 'spoiler', 'code']:
         CAP_FONT = 'code'
@@ -171,27 +168,27 @@ async def load_config():
     LEECH_FILENAME_PREFIX = environ.get('LEECH_FILENAME_PREFIX', '')
     if len(LEECH_FILENAME_PREFIX) == 0:
         LEECH_FILENAME_PREFIX = ''
-
+ 
     LEECH_FILENAME_SUFFIX = environ.get('LEECH_FILENAME_SUFFIX', '')
     if len(LEECH_FILENAME_SUFFIX) == 0:
         LEECH_FILENAME_SUFFIX = ''
-
+ 
     LEECH_FILENAME_CAPTION = environ.get('LEECH_FILENAME_CAPTION', '')
     if len(LEECH_FILENAME_CAPTION) == 0:
         LEECH_FILENAME_CAPTION = ''
-
+ 
     LEECH_FILENAME_REMNAME = environ.get('LEECH_FILENAME_REMNAME', '')
     if len(LEECH_FILENAME_REMNAME) == 0:
         LEECH_FILENAME_REMNAME = ''
-
+ 
     MIRROR_FILENAME_PREFIX = environ.get('MIRROR_FILENAME_PREFIX', '')
     if len(MIRROR_FILENAME_PREFIX) == 0:
         MIRROR_FILENAME_PREFIX = ''
-
+ 
     MIRROR_FILENAME_SUFFIX = environ.get('MIRROR_FILENAME_SUFFIX', '')
     if len(MIRROR_FILENAME_SUFFIX) == 0:
         MIRROR_FILENAME_SUFFIX = ''
-
+ 
     MIRROR_FILENAME_REMNAME = environ.get('MIRROR_FILENAME_REMNAME', '')
     if len(MIRROR_FILENAME_REMNAME) == 0:
         MIRROR_FILENAME_REMNAME = ''
@@ -199,15 +196,15 @@ async def load_config():
     SEARCH_PLUGINS = environ.get('SEARCH_PLUGINS', '')
     if len(SEARCH_PLUGINS) == 0:
         SEARCH_PLUGINS = ''
-
+ 
     MAX_SPLIT_SIZE = 4194304000 if IS_PREMIUM_USER else 2097152000
-
+ 
     LEECH_SPLIT_SIZE = environ.get('LEECH_SPLIT_SIZE', '')
     if len(LEECH_SPLIT_SIZE) == 0 or int(LEECH_SPLIT_SIZE) > MAX_SPLIT_SIZE:
         LEECH_SPLIT_SIZE = MAX_SPLIT_SIZE
     else:
         LEECH_SPLIT_SIZE = int(LEECH_SPLIT_SIZE)
-
+ 
     STATUS_UPDATE_INTERVAL = environ.get('STATUS_UPDATE_INTERVAL', '')
     if len(STATUS_UPDATE_INTERVAL) == 0:
         STATUS_UPDATE_INTERVAL = 10
@@ -219,34 +216,34 @@ async def load_config():
                 Interval[0].cancel()
                 Interval.clear()
                 Interval.append(setInterval(STATUS_UPDATE_INTERVAL, update_all_messages))
-
+ 
     AUTO_DELETE_MESSAGE_DURATION = environ.get(
         'AUTO_DELETE_MESSAGE_DURATION', '')
     if len(AUTO_DELETE_MESSAGE_DURATION) == 0:
         AUTO_DELETE_MESSAGE_DURATION = 30
     else:
         AUTO_DELETE_MESSAGE_DURATION = int(AUTO_DELETE_MESSAGE_DURATION)
-
+ 
     YT_DLP_OPTIONS = environ.get('YT_DLP_OPTIONS', '')
     if len(YT_DLP_OPTIONS) == 0:
         YT_DLP_OPTIONS = ''
-
+ 
     SEARCH_LIMIT = environ.get('SEARCH_LIMIT', '')
     SEARCH_LIMIT = 0 if len(SEARCH_LIMIT) == 0 else int(SEARCH_LIMIT)
-
+ 
     STATUS_LIMIT = environ.get('STATUS_LIMIT', '')
     STATUS_LIMIT = 10 if len(STATUS_LIMIT) == 0 else int(STATUS_LIMIT)
-
+ 
     RSS_CHAT = environ.get('RSS_CHAT', '')
     RSS_CHAT = '' if len(RSS_CHAT) == 0 else int(RSS_CHAT)
-
+ 
     RSS_DELAY = environ.get('RSS_DELAY', '')
     RSS_DELAY = 900 if len(RSS_DELAY) == 0 else int(RSS_DELAY)
-
+ 
     CMD_SUFFIX = environ.get('CMD_SUFFIX', '')
-
+ 
     USER_SESSION_STRING = environ.get('USER_SESSION_STRING', '')
-
+ 
     TORRENT_TIMEOUT = environ.get('TORRENT_TIMEOUT', '')
     downloads = aria2.get_downloads()
     if len(TORRENT_TIMEOUT) == 0:
@@ -271,42 +268,42 @@ async def load_config():
         if DATABASE_URL:
             await DbManger().update_aria2('bt-stop-timeout', TORRENT_TIMEOUT)
         TORRENT_TIMEOUT = int(TORRENT_TIMEOUT)
-
+ 
     QUEUE_ALL = environ.get('QUEUE_ALL', '')
     QUEUE_ALL = '' if len(QUEUE_ALL) == 0 else int(QUEUE_ALL)
-
+ 
     QUEUE_DOWNLOAD = environ.get('QUEUE_DOWNLOAD', '')
     QUEUE_DOWNLOAD = '' if len(QUEUE_DOWNLOAD) == 0 else int(QUEUE_DOWNLOAD)
-
+ 
     QUEUE_UPLOAD = environ.get('QUEUE_UPLOAD', '')
     QUEUE_UPLOAD = '' if len(QUEUE_UPLOAD) == 0 else int(QUEUE_UPLOAD)
-
+ 
     INCOMPLETE_TASK_NOTIFIER = environ.get('INCOMPLETE_TASK_NOTIFIER', '')
     INCOMPLETE_TASK_NOTIFIER = INCOMPLETE_TASK_NOTIFIER.lower() == 'true'
     if not INCOMPLETE_TASK_NOTIFIER and DATABASE_URL:
         await DbManger().trunc_table('tasks')
-
+ 
     STOP_DUPLICATE = environ.get('STOP_DUPLICATE', '')
     STOP_DUPLICATE = STOP_DUPLICATE.lower() == 'true'
-
+ 
     IS_TEAM_DRIVE = environ.get('IS_TEAM_DRIVE', '')
     IS_TEAM_DRIVE = IS_TEAM_DRIVE.lower() == 'true'
-
+ 
     USE_SERVICE_ACCOUNTS = environ.get('USE_SERVICE_ACCOUNTS', '')
     USE_SERVICE_ACCOUNTS = USE_SERVICE_ACCOUNTS.lower() == 'true'
-
+ 
     WEB_PINCODE = environ.get('WEB_PINCODE', '')
     WEB_PINCODE = WEB_PINCODE.lower() == 'true'
-
+ 
     AS_DOCUMENT = environ.get('AS_DOCUMENT', '')
     AS_DOCUMENT = AS_DOCUMENT.lower() == 'true'
     
     USER_TD_MODE = environ.get('USER_TD_MODE', '')
     USER_TD_MODE = USER_TD_MODE.lower() == 'true'
-
+ 
     USER_TD_SA = environ.get('USER_TD_SA', '')
     USER_TD_SA = USER_TD_SA.lower() if len(USER_TD_SA) != 0 else ''
-
+ 
     SHOW_MEDIAINFO = environ.get('SHOW_MEDIAINFO', '')
     SHOW_MEDIAINFO = SHOW_MEDIAINFO.lower() == 'true'
     
@@ -315,85 +312,85 @@ async def load_config():
     
     SOURCE_LINK = environ.get('SOURCE_LINK', '')
     SOURCE_LINK = SOURCE_LINK.lower() == 'true'
-
+ 
     DELETE_LINKS = environ.get('DELETE_LINKS', '')
     DELETE_LINKS = DELETE_LINKS.lower() == 'true'
-
+ 
     EQUAL_SPLITS = environ.get('EQUAL_SPLITS', '')
     EQUAL_SPLITS = EQUAL_SPLITS.lower() == 'true'
-
+ 
     MEDIA_GROUP = environ.get('MEDIA_GROUP', '')
     MEDIA_GROUP = MEDIA_GROUP.lower() == 'true'
-
+ 
     BASE_URL_PORT = environ.get('BASE_URL_PORT', '')
     BASE_URL_PORT = 80 if len(BASE_URL_PORT) == 0 else int(BASE_URL_PORT)
-
+ 
     RCLONE_SERVE_URL = environ.get('RCLONE_SERVE_URL', '')
     if len(RCLONE_SERVE_URL) == 0:
         RCLONE_SERVE_URL = ''
-
+ 
     RCLONE_SERVE_PORT = environ.get('RCLONE_SERVE_PORT', '')
     RCLONE_SERVE_PORT = 8080 if len(
         RCLONE_SERVE_PORT) == 0 else int(RCLONE_SERVE_PORT)
-
+ 
     RCLONE_SERVE_USER = environ.get('RCLONE_SERVE_USER', '')
     if len(RCLONE_SERVE_USER) == 0:
         RCLONE_SERVE_USER = ''
-
+ 
     RCLONE_SERVE_PASS = environ.get('RCLONE_SERVE_PASS', '')
     if len(RCLONE_SERVE_PASS) == 0:
         RCLONE_SERVE_PASS = ''
-
+ 
     await (await create_subprocess_exec("pkill", "-9", "-f", "gunicorn")).wait()
     BASE_URL = environ.get('BASE_URL', '').rstrip("/")
     if len(BASE_URL) == 0:
         BASE_URL = ''
     else:
         await create_subprocess_shell(f"gunicorn web.wserver:app --bind 0.0.0.0:{BASE_URL_PORT} --worker-class gevent")
-
+ 
     UPSTREAM_REPO = environ.get('UPSTREAM_REPO', '')
     if len(UPSTREAM_REPO) == 0:
         UPSTREAM_REPO = ''
         
     UPGRADE_PACKAGES = environ.get('UPGRADE_PACKAGES', '')
     UPGRADE_PACKAGES = UPGRADE_PACKAGES.lower() == 'true'
-
+ 
     UPSTREAM_BRANCH = environ.get('UPSTREAM_BRANCH', '')
     if len(UPSTREAM_BRANCH) == 0:
         UPSTREAM_BRANCH = 'master'
-
+ 
     STORAGE_THRESHOLD = environ.get('STORAGE_THRESHOLD', '')
     STORAGE_THRESHOLD = '' if len(
         STORAGE_THRESHOLD) == 0 else float(STORAGE_THRESHOLD)
-
+ 
     TORRENT_LIMIT = environ.get('TORRENT_LIMIT', '')
     TORRENT_LIMIT = '' if len(TORRENT_LIMIT) == 0 else float(TORRENT_LIMIT)
-
+ 
     DIRECT_LIMIT = environ.get('DIRECT_LIMIT', '')
     DIRECT_LIMIT = '' if len(DIRECT_LIMIT) == 0 else float(DIRECT_LIMIT)
-
+ 
     YTDLP_LIMIT = environ.get('YTDLP_LIMIT', '')
     YTDLP_LIMIT = '' if len(YTDLP_LIMIT) == 0 else float(YTDLP_LIMIT)
-
+ 
     GDRIVE_LIMIT = environ.get('GDRIVE_LIMIT', '')
     GDRIVE_LIMIT = '' if len(GDRIVE_LIMIT) == 0 else float(GDRIVE_LIMIT)
-
+ 
     CLONE_LIMIT = environ.get('CLONE_LIMIT', '')
     CLONE_LIMIT = '' if len(CLONE_LIMIT) == 0 else float(CLONE_LIMIT)
-
+ 
     MEGA_LIMIT = environ.get('MEGA_LIMIT', '')
     MEGA_LIMIT = '' if len(MEGA_LIMIT) == 0 else float(MEGA_LIMIT)
-
+ 
     LEECH_LIMIT = environ.get('LEECH_LIMIT', '')
     LEECH_LIMIT = '' if len(LEECH_LIMIT) == 0 else float(LEECH_LIMIT)
-
+ 
     FSUB_IDS = environ.get('FSUB_IDS', '')
     if len(FSUB_IDS) == 0:
         FSUB_IDS = ''
     
     LINKS_LOG_ID = environ.get('LINKS_LOG_ID', '')
     LINKS_LOG_ID = '' if len(LINKS_LOG_ID) == 0 else int(LINKS_LOG_ID)
-
+ 
     MIRROR_LOG_ID = environ.get('MIRROR_LOG_ID', '')
     if len(MIRROR_LOG_ID) == 0:
         MIRROR_LOG_ID = ''
@@ -405,52 +402,52 @@ async def load_config():
     EXCEP_CHATS = environ.get('EXCEP_CHATS', '')
     if len(EXCEP_CHATS) == 0:
         EXCEP_CHATS = ''
-
+ 
     USER_MAX_TASKS = environ.get('USER_MAX_TASKS', '')
     USER_MAX_TASKS = int(USER_MAX_TASKS) if USER_MAX_TASKS.isdigit() else ''
-
+ 
     USER_TIME_INTERVAL = environ.get('USER_TIME_INTERVAL', '')
     USER_TIME_INTERVAL = int(USER_TIME_INTERVAL) if USER_TIME_INTERVAL.isdigit() else 0
-
+ 
     PLAYLIST_LIMIT = environ.get('PLAYLIST_LIMIT', '')
     PLAYLIST_LIMIT = '' if len(PLAYLIST_LIMIT) == 0 else int(PLAYLIST_LIMIT)
-
+ 
     BOT_PM = environ.get('BOT_PM', '')
     BOT_PM = BOT_PM.lower() == 'true'
-
+ 
     DAILY_TASK_LIMIT = environ.get('DAILY_TASK_LIMIT', '')
     DAILY_TASK_LIMIT = '' if len(DAILY_TASK_LIMIT) == 0 else int(DAILY_TASK_LIMIT)
-
+ 
     DAILY_MIRROR_LIMIT = environ.get('DAILY_MIRROR_LIMIT', '')
     DAILY_MIRROR_LIMIT = '' if len(DAILY_MIRROR_LIMIT) == 0 else float(DAILY_MIRROR_LIMIT)
-
+ 
     DAILY_LEECH_LIMIT = environ.get('DAILY_LEECH_LIMIT', '')
     DAILY_LEECH_LIMIT = '' if len(DAILY_LEECH_LIMIT) == 0 else float(DAILY_LEECH_LIMIT)
-
+ 
     DISABLE_DRIVE_LINK = environ.get('DISABLE_DRIVE_LINK', '')
     DISABLE_DRIVE_LINK = DISABLE_DRIVE_LINK.lower() == 'true'
-
+ 
     BOT_THEME = environ.get('BOT_THEME', '')
     if len(BOT_THEME) == 0:
         BOT_THEME = 'minimal'
-
+ 
     IMG_SEARCH = environ.get('IMG_SEARCH', '')
     IMG_SEARCH = (IMG_SEARCH.replace("'", '').replace('"', '').replace('[', '').replace(']', '').replace(",", "")).split()
     
     IMG_PAGE = environ.get('IMG_PAGE', '')
     IMG_PAGE = int(IMG_PAGE) if IMG_PAGE.isdigit() else ''
-
+ 
     IMAGES = environ.get('IMAGES', '')
     IMAGES = (IMAGES.replace("'", '').replace('"', '').replace('[', '').replace(']', '').replace(",", "")).split()
-
+ 
     AUTHOR_NAME = environ.get('AUTHOR_NAME', '')
     if len(AUTHOR_NAME) == 0:
         AUTHOR_NAME = 'WZML-X'
-
+ 
     AUTHOR_URL = environ.get('AUTHOR_URL', '')
     if len(AUTHOR_URL) == 0:
         AUTHOR_URL = 'https://t.me/WZML_X'
-
+ 
     TITLE_NAME = environ.get('TITLE_NAME', '')
     if len(TITLE_NAME) == 0:
         TITLE_NAME = 'WeebZone-X'
@@ -458,14 +455,14 @@ async def load_config():
     COVER_IMAGE = environ.get('COVER_IMAGE', '')
     if len(COVER_IMAGE) == 0:
         COVER_IMAGE = 'https://graph.org/file/60f9f8bcb97d27f76f5c0.jpg'
-
+ 
     GD_INFO = environ.get('GD_INFO', '')
     if len(GD_INFO) == 0:
         GD_INFO = 'Uploaded by WZML-X'
-
+ 
     SAVE_MSG = environ.get('SAVE_MSG', '')
     SAVE_MSG = SAVE_MSG.lower() == 'true'
-
+ 
     SET_COMMANDS = environ.get('SET_COMMANDS', '')
     SET_COMMANDS = SET_COMMANDS.lower() == 'true'
     
@@ -474,7 +471,7 @@ async def load_config():
     
     SCREENSHOTS_MODE = environ.get('SCREENSHOTS_MODE', '')
     SCREENSHOTS_MODE = SCREENSHOTS_MODE.lower() == 'true'
-
+ 
     CLEAN_LOG_MSG = environ.get('CLEAN_LOG_MSG', '')
     CLEAN_LOG_MSG = CLEAN_LOG_MSG.lower() == 'true'
     
@@ -483,15 +480,15 @@ async def load_config():
     
     TOKEN_TIMEOUT = environ.get('TOKEN_TIMEOUT', '')
     TOKEN_TIMEOUT = int(TOKEN_TIMEOUT) if TOKEN_TIMEOUT.isdigit() else ''
-
+ 
     LOGIN_PASS = environ.get('LOGIN_PASS', '')
     if len(LOGIN_PASS) == 0:
         LOGIN_PASS = None
-
+ 
     FILELION_API = environ.get('FILELION_API', '')
     if len(FILELION_API) == 0:
         FILELION_API = ''
-
+ 
     DEF_IMDB_TEMP  = environ.get('IMDB_TEMPLATE', '')
     if len(DEF_IMDB_TEMP) == 0:
         DEF_IMDB_TEMP = '''<b>Title: </b> {title} [{year}]
@@ -502,11 +499,11 @@ async def load_config():
 <b>IMDb URL:</b> {url}
 <b>Language: </b>{languages}
 <b>Country of Origin : </b> {countries}
-
+ 
 <b>Story Line: </b><code>{plot}</code>
-
+ 
 <a href="{url_cast}">Read More ...</a>'''
-
+ 
     DEF_ANI_TEMP  = environ.get('ANIME_TEMPLATE', '')
     if len(DEF_ANI_TEMP) == 0:
         DEF_ANI_TEMP = '''<b>{ro_title}</b>({na_title})
@@ -522,9 +519,9 @@ async def load_config():
 <b>Genres</b>: {genres}
 <b>Hashtag</b>: {hashtag}
 <b>Studios</b>: {studios}
-
+ 
 <b>Description</b>: <i>{description}</i>'''
-
+ 
     MDL_TEMPLATE = environ.get('MDL_TEMPLATE', '')
     if len(MDL_TEMPLATE) == 0:
         MDL_TEMPLATE = '''<b>Title:</b> {title}
@@ -535,9 +532,9 @@ async def load_config():
 <b>MyDramaList URL:</b> {url}
 <b>Language:</b> #Korean
 <b>Country of Origin:</b> {country}
-
+ 
 <b>Story Line:</b> {synopsis}
-
+ 
 <a href='{url}'>Read More ...</a>'''
     
     TIMEZONE = environ.get('TIMEZONE', '')
@@ -548,7 +545,7 @@ async def load_config():
     if GDRIVE_ID:
         list_drives_dict['Main'] = {"drive_id": GDRIVE_ID, "index_link": INDEX_URL}
         categories_dict['Root'] = {"drive_id": GDRIVE_ID, "index_link": INDEX_URL}
-
+ 
     if await aiopath.exists('list_drives.txt'):
         async with aiopen('list_drives.txt', 'r+') as f:
             lines = await f.readlines()
@@ -557,7 +554,7 @@ async def load_config():
                 temp = line.strip().rsplit(maxsplit=sep)
                 name = "Main Custom" if temp[0].casefold() == "Main" else temp[0]
                 list_drives_dict[name] = {'drive_id': temp[1], 'index_link': (temp[2] if sep == 2 else '')}
-
+ 
     categories_dict.clear()
     if await aiopath.exists('categories.txt'):
         async with aiopen('categories.txt', 'r+') as f:
@@ -567,7 +564,7 @@ async def load_config():
                 temp = line.strip().rsplit(maxsplit=sep)
                 name = "Root Custom" if temp[0].casefold() == "Root" else temp[0]
                 categories_dict[name] = {'drive_id': temp[1], 'index_link': (temp[2] if sep == 2 else '')}
-
+ 
     extra_buttons.clear()
     if await aiopath.exists('buttons.txt'):
         async with aiopen('buttons.txt', 'r+') as f:
@@ -578,7 +575,7 @@ async def load_config():
                     break
                 if len(temp) == 2:
                     extra_buttons[temp[0].replace("_", " ")] = temp[1]
-
+ 
     shorteners_list.clear()
     if await aiopath.exists('shorteners.txt'):
         async with aiopen('shorteners.txt', 'r+') as f:
@@ -587,7 +584,7 @@ async def load_config():
                 temp = line.strip().split()
                 if len(temp) == 2:
                     shorteners_list.append({'domain': temp[0],'api_key': temp[1]})
-
+ 
     config_dict.update({'ANIME_TEMPLATE': DEF_ANI_TEMP,
                         'AS_DOCUMENT': AS_DOCUMENT,
                         'AUTHORIZED_CHATS': AUTHORIZED_CHATS,
@@ -699,14 +696,14 @@ async def load_config():
                         'USE_SERVICE_ACCOUNTS': USE_SERVICE_ACCOUNTS,
                         'WEB_PINCODE': WEB_PINCODE,
                         'YT_DLP_OPTIONS': YT_DLP_OPTIONS})
-
+ 
     if DATABASE_URL:
         await DbManger().update_config(config_dict)
     await gather(initiate_search_tools(), start_from_queued(), rclone_serve_booter())
-
-async def get_buttons(client, key=None, edit_type=None, edit_mode=None, mess=None):
+ 
+ 
+async def get_buttons(key=None, edit_type=None, edit_mode=None, mess=None):
     buttons = ButtonMaker()
-  
     if key is None:
         buttons.ibutton('Config Variables', "botset var")
         buttons.ibutton('Private Files', "botset private")
@@ -714,21 +711,14 @@ async def get_buttons(client, key=None, edit_type=None, edit_mode=None, mess=Non
         buttons.ibutton('Aria2c Settings', "botset aria")
         buttons.ibutton('Close', "botset close")
         msg = '<b><i>Bot Settings:</i></b>'
-    
     elif key == 'var':
-        # Check if the user is the owner
-        if not await CustomFilters.owner(client, mess):
-           await callback_query.answer("Only owner can view Config Variables", show_alert=True)
-        return None, None  # Stop further processing for non-owners
-        else:
-            for k in list(OrderedDict(sorted(config_dict.items())).keys())[START:10+START]:
-                buttons.ibutton(k, f"botset editvar {k}")
-            buttons.ibutton('Back', "botset back")
-            buttons.ibutton('Close', "botset close")
-            for x in range(0, len(config_dict)-1, 10):
-                buttons.ibutton(f'{int(x/10)+1}', f"botset start var {x}", position='footer')
-            msg = f'<b>Config Variables</b> | <b>Page: {int(START/10)+1}</b>'
-    
+        for k in list(OrderedDict(sorted(config_dict.items())).keys())[START:10+START]:
+            buttons.ibutton(k, f"botset editvar {k}")
+        buttons.ibutton('Back', "botset back")
+        buttons.ibutton('Close', "botset close")
+        for x in range(0, len(config_dict)-1, 10):
+            buttons.ibutton(f'{int(x/10)+1}', f"botset start var {x}", position='footer')
+        msg = f'<b>Config Variables</b> | <b>Page: {int(START/10)+1}</b>'
     elif key == 'private':
         buttons.ibutton('Back', "botset back")
         buttons.ibutton('Close', "botset close")
@@ -740,7 +730,6 @@ async def get_buttons(client, key=None, edit_type=None, edit_mode=None, mess=Non
 <b>NOTE:</b> Changing .netrc will not take effect for aria2c until restart.
  
 <b>Timeout:</b> 60 sec'''
-
     elif key == 'aria':
         for k in list(aria2_options.keys())[START:10+START]:
             buttons.ibutton(k, f"botset editaria {k}")
@@ -754,7 +743,6 @@ async def get_buttons(client, key=None, edit_type=None, edit_mode=None, mess=Non
         for x in range(0, len(aria2_options)-1, 10):
             buttons.ibutton(f'{int(x/10)+1}', f"botset start aria {x}", position='footer')
         msg = f'Aria2c Options | Page: {int(START/10)+1} | State: {STATE}'
-        
     elif key == 'qbit':
         for k in list(qbit_options.keys())[START:10+START]:
             buttons.ibutton(k, f"botset editqbit {k}")
@@ -765,16 +753,17 @@ async def get_buttons(client, key=None, edit_type=None, edit_mode=None, mess=Non
         buttons.ibutton('Back', "botset back")
         buttons.ibutton('Close', "botset close")
         for x in range(0, len(qbit_options)-1, 10):
-            buttons.ibutton(f'{int(x/10)+1}', f"botset start qbit {x}", position='footer')
+            buttons.ibutton(
+                f'{int(x/10)+1}', f"botset start qbit {x}", position='footer')
         msg = f'Qbittorrent Options | Page: {int(START/10)+1} | State: {STATE}'
-        
     elif edit_type == 'editvar':
         msg = f'<b>Variable:</b> <code>{key}</code>\n\n'
         msg += f'<b>Description:</b> {default_desp.get(key, "No Description Provided")}\n\n'
         if mess.chat.type == ChatType.PRIVATE:
             msg += f'<b>Value:</b> <spoiler> {config_dict.get(key, "None")} </spoiler>\n\n'
         else:
-            buttons.ibutton('View Var Value', f"botset showvar {key}", position="header")
+            buttons.ibutton('View Var Value',
+                            f"botset showvar {key}", position="header")
         buttons.ibutton('Back', "botset back var", position="footer")
         if key not in bool_vars:
             if not edit_mode:
@@ -784,7 +773,8 @@ async def get_buttons(client, key=None, edit_type=None, edit_mode=None, mess=Non
         if key not in ['TELEGRAM_HASH', 'TELEGRAM_API', 'OWNER_ID', 'BOT_TOKEN'] and key not in bool_vars:
             buttons.ibutton('Reset', f"botset resetvar {key}")
         buttons.ibutton('Close', "botset close", position="footer")
-        if edit_mode and key in ['SUDO_USERS', 'CMD_SUFFIX', 'OWNER_ID', 'USER_SESSION_STRING', 'TELEGRAM_HASH', 'TELEGRAM_API', 'AUTHORIZED_CHATS', 'DATABASE_URL', 'BOT_TOKEN', 'DOWNLOAD_DIR']:
+        if edit_mode and key in ['SUDO_USERS', 'CMD_SUFFIX', 'OWNER_ID', 'USER_SESSION_STRING', 'TELEGRAM_HASH',
+                                 'TELEGRAM_API', 'AUTHORIZED_CHATS', 'DATABASE_URL', 'BOT_TOKEN', 'DOWNLOAD_DIR']:
             msg += '<b>Note:</b> Restart required for this edit to take effect!\n\n'
         if edit_mode and key not in bool_vars:
             msg += '<i>Send a valid value for the above Var.</i> <b>Timeout:</b> 60 sec'
@@ -792,7 +782,6 @@ async def get_buttons(client, key=None, edit_type=None, edit_mode=None, mess=Non
             msg += '<i>Choose a valid value for the above Var</i>'
             buttons.ibutton('True', f"botset boolvar {key} on")
             buttons.ibutton('False', f"botset boolvar {key} off")
-            
     elif edit_type == 'editaria':
         buttons.ibutton('Back', "botset back aria")
         if key != 'newkey':
@@ -803,22 +792,21 @@ async def get_buttons(client, key=None, edit_type=None, edit_mode=None, mess=Non
             msg = 'Send a key with value. Example: https-proxy-user:value'
         else:
             msg = f'Send a valid value for {key}. Timeout: 60 sec'
-            
     elif edit_type == 'editqbit':
         buttons.ibutton('Back', "botset back qbit")
         buttons.ibutton('Empty String', f"botset emptyqbit {key}")
         buttons.ibutton('Close', "botset close")
         msg = f'Send a valid value for {key}. Timeout: 60 sec'
-      
-    msg = msg if msg else 'Invalid Option'
     button = buttons.build_menu(1) if key is None else buttons.build_menu(2)
     return msg, button
+ 
  
 async def update_buttons(message, key=None, edit_type=None, edit_mode=None):
     msg, button = await get_buttons(key, edit_type, edit_mode, message)
     await editMessage(message, msg, button)
-
-async def edit_variable(client, message, pre_message, key):
+ 
+ 
+async def edit_variable(_, message, pre_message, key):
     handler_dict[message.chat.id] = False
     value = message.text
     if key == 'RSS_DELAY':
@@ -888,9 +876,9 @@ async def edit_variable(client, message, pre_message, key):
         await start_from_queued()
     elif key in ['RCLONE_SERVE_URL', 'RCLONE_SERVE_PORT', 'RCLONE_SERVE_USER', 'RCLONE_SERVE_PASS']:
         await rclone_serve_booter()
-
-
-async def edit_aria(client, message, pre_message, key):
+ 
+ 
+async def edit_aria(_, message, pre_message, key):
     handler_dict[message.chat.id] = False
     value = message.text
     if key == 'newkey':
@@ -914,9 +902,9 @@ async def edit_aria(client, message, pre_message, key):
     await deleteMessage(message)
     if DATABASE_URL:
         await DbManger().update_aria2(key, value)
-
-
-async def edit_qbit(client, message, pre_message, key):
+ 
+ 
+async def edit_qbit(_, message, pre_message, key):
     handler_dict[message.chat.id] = False
     value = message.text
     if value.lower() == 'true':
@@ -933,9 +921,9 @@ async def edit_qbit(client, message, pre_message, key):
     await deleteMessage(message)
     if DATABASE_URL:
         await DbManger().update_qbittorrent(key, value)
-
-
-async def update_private_file(client, message, pre_message):
+ 
+ 
+async def update_private_file(_, message, pre_message):
     handler_dict[message.chat.id] = False
     if not message.media and (file_name := message.text):
         path = file_name
@@ -1048,13 +1036,13 @@ async def update_private_file(client, message, pre_message):
         await DbManger().update_private_file(path)
     if await aiopath.exists('accounts.zip'):
         await remove('accounts.zip')
-
-
+ 
+ 
 async def event_handler(client, query, pfunc, rfunc, document=False):
     chat_id = query.message.chat.id
     handler_dict[chat_id] = True
     start_time = time()
-
+ 
     async def event_filter(_, __, event):
         user = event.from_user or event.sender_chat
         return bool(user.id == query.from_user.id and event.chat.id == chat_id and (event.text or event.document and document))
@@ -1066,8 +1054,8 @@ async def event_handler(client, query, pfunc, rfunc, document=False):
             handler_dict[chat_id] = False
             await rfunc()
     client.remove_handler(*handler)
-
-
+ 
+ 
 @new_thread
 async def edit_bot_settings(client, query):
     data = query.data.split()
@@ -1284,19 +1272,15 @@ async def edit_bot_settings(client, query):
                                                    && git push origin {config_dict['UPSTREAM_BRANCH']} -qf")).wait()
         await deleteMessage(message)
         await deleteMessage(message.reply_to_message)
-
-async def bot_settings(client, message):
+ 
+ 
+async def bot_settings(_, message):
+    msg, button = await get_buttons()
     globals()['START'] = 0
-    msg, button = await get_buttons(client=client, mess=message)  # Pass 'client' here
-    if msg and button:
-        await sendMessage(message, msg, button, 'IMAGES')
-
-async def edit_bot_settings(client, callback_query):
-    # Pass 'client' here as well
-    msg, button = await get_buttons(client=client, key=callback_query.data.split()[1], mess=callback_query.message, callback_query=callback_query)
-
-# Handler to add bot settings command
-bot.add_handler(MessageHandler(bot_settings, filters=command(BotCommands.BotSetCommand) & CustomFilters.sudo))
-
-# Handler to process callback queries for bot settings
-bot.add_handler(CallbackQueryHandler(edit_bot_settings, filters=regex("^botset") & CustomFilters.sudo))
+    await sendMessage(message, msg, button, 'IMAGES')
+ 
+ 
+bot.add_handler(MessageHandler(bot_settings, filters=command(
+    BotCommands.BotSetCommand) & CustomFilters.sudo))
+bot.add_handler(CallbackQueryHandler(edit_bot_settings,
+                filters=regex("^botset") & CustomFilters.sudo))
